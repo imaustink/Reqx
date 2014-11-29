@@ -32,7 +32,7 @@ Express.post('/resource', { data: 'example' }, function(err, result){
 
 post() and get() arguments
 
-First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell
+First Header  | Second Header | Third Heading 
+------------- | ------------- | ------------- 
+Content Cell  | Content Cell | Content Cell 
+Content Cell  | Content Cell | Content Cell 
