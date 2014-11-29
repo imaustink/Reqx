@@ -6,7 +6,7 @@ A lightweight library for simplifying jQuery AJAX calls while emulating the use 
 Examples
 ==============
 
-Basic get repest
+Basic use of .get()
 ```
 // Store express in variable to avoid colisions when dealing with other request chains
 var Request = Express;
@@ -17,3 +17,21 @@ Express.get('/resource', function(err, result){
     alert(result);
 });
 ```
+
+basic use of .post()
+```
+// Store express in variable to avoid colisions when dealing with other request chains
+var Request = Express;
+Express.post('/resource', { data: 'example' }, function(err, result){
+    // Handle error
+    if(err) throw err;
+    // Do something with result
+    alert(result);
+});
+```
+
+post() and get() arguments
+Argument  | URL | Data | Callback
+------------- | ------------- | ------------- |
+Required  | yes | no | no
+Type  | string | object | function
