@@ -10,7 +10,7 @@ Basic use of .get()
 ```
 // Store express in variable to avoid colisions when dealing with other request chains
 var Request = Express;
-Express.get('/resource', function(err, result){
+Request.get('/resource', function(err, result){
     // Handle error
     if(err) throw err;
     // Do something with result
@@ -18,11 +18,11 @@ Express.get('/resource', function(err, result){
 });
 ```
 
-basic use of .post()
+Basic use of .post()
 ```
 // Store express in variable to avoid colisions when dealing with other request chains
 var Request = Express;
-Express.post('/resource', { data: 'example' }, function(err, result){
+Request.post('/resource', { data: 'example' }, function(err, result){
     // Handle error
     if(err) throw err;
     // Do something with result
@@ -30,7 +30,18 @@ Express.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-post(url, data, callback) and get(url, data, callback) options
+Chaining
+```
+Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
+    if(err) return alert(err);
+    drawStats(result);
+}).get('/template/heading.html', function(err, result){
+    if(err) return alert(err);
+    $('#Target').html(result);
+});
+```
+
+Options
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
