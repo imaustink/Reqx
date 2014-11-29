@@ -32,6 +32,6 @@ Express.post('/resource', { data: 'example' }, function(err, result){
 
 post() and get() arguments
 Argument  | URL | Data | Callback
-------------- | ------------- | ------------- |
+------------- | ------------- | -------------
 Required  | yes | no | no
 Type  | string | object | function
