@@ -30,7 +30,7 @@ Express.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-post() and get() arguments
+post(url, data, callback) and get(url, data, callback) options
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
