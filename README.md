@@ -32,8 +32,7 @@ Express.post('/resource', { data: 'example' }, function(err, result){
 
 post() and get() arguments
 
-| Argument | Required | Type |
-| ------------- | ------------- |
-| URL  | yes | sting |
-| Data  | no | object |
-| Callback  | no | function |
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell
