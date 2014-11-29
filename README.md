@@ -30,16 +30,33 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-Chaining
+Chaining requests with a done callback
 ```
+// Store express in variable to avoid colisions when dealing with other request chains
+var Request = Express;
 Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
+    // handle error
     if(err) return alert(err);
+    // Send response to handler
     drawStats(result);
 }).get('/template/heading.html', function(err, result){
+    // Handle error
     if(err) return alert(err);
+    // Append response to target
     $('#Target').html(result);
+}).done(function(err){
+    $('#Conatainer').show();
 });
 ```
+
+Syncronis request
+```
+// Store express in variable to avoid colisions when dealing with other request chains
+var Request = Express;
+Request.config.sync = false;
+Request.post('/test').get('/test').post('/test').get('/test').post('/test').get('/test');
+```
+When ```Request.config.sync``` is set to ```false``` each request in the chain will be handled synchronously.
 
 Options
 
