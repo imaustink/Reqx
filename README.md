@@ -53,15 +53,34 @@ Syncronis request
 ```
 // Store express in variable to avoid colisions when dealing with other request chains
 var Request = Express;
-Request.config.sync = false;
+Request.config.sync = true;
 Request.post('/test').get('/test').post('/test').get('/test').post('/test').get('/test');
 ```
-When ```Request.config.sync``` is set to ```false``` each request in the chain will be handled synchronously.
+When ```Request.config.sync``` is set to ```true``` each request in the chain will be handled synchronously.
 
-Options
+Docs
+==============
+Express.post(url, data, callback);
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
 URL  | yes | string 
 Data  | no | object 
 Callback  | no | function 
+
+Express.get(url, data, callback);
+
+Arguments  | Required | Type 
+------------- | ------------- | ------------- 
+URL  | yes | string 
+Data  | no | object 
+Callback  | no | function 
+
+Express.ajax(url, data, callback);
+
+Arguments  | Required | Type | default 
+------------- | ------------- | ------------- | ------------- 
+URL  | no | string | ```window.location.href``` 
+Method  | no | string | ```'GET'``` 
+Data  | no | object | ```{}``` 
+Callback  | no | function | ```null```
