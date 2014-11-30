@@ -8,7 +8,7 @@ Examples
 
 Basic use of .get()
 ```
-// Store express in variable to avoid colisions when dealing with other request chains
+// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.get('/resource', function(err, result){
     // Handle error
@@ -20,7 +20,7 @@ Request.get('/resource', function(err, result){
 
 Basic use of .post()
 ```
-// Store express in variable to avoid colisions when dealing with other request chains
+// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
     // Handle error
@@ -32,7 +32,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 
 Chaining requests with a done callback
 ```
-// Store express in variable to avoid colisions when dealing with other request chains
+// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
     // handle error
@@ -51,7 +51,7 @@ Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
 
 Syncronis request
 ```
-// Store express in variable to avoid colisions when dealing with other request chains
+// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.config.sync = true;
 Request.post('/test').get('/test').post('/test').get('/test').post('/test').get('/test');
