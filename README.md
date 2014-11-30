@@ -62,21 +62,27 @@ Docs
 ==============
 Express.post(url, data, callback);
 
+Create a post request.
+
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
-URL  | yes | string 
+URL  | no | string 
 Data  | no | object 
 Callback  | no | function 
 
 Express.get(url, data, callback);
 
+Create a get request.
+
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
-URL  | yes | string 
+URL  | no | string 
 Data  | no | object 
 Callback  | no | function 
 
 Express.ajax(url, method, data, callback);
+
+Create AJAX requests.
 
 Arguments  | Required | Type | default 
 ------------- | ------------- | ------------- | ------------- 
@@ -86,6 +92,8 @@ Data  | no | object | ```{}```
 Callback  | no | function | ```null```
 
 Express.done(callback);
+
+Create done callback on chained requests
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
