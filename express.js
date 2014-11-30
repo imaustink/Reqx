@@ -1,5 +1,5 @@
-// Express class
-var Express = function(){};
+// Request class
+var Request = function(){};
 // Constructor
 (function(){
     // Global scope this
@@ -23,14 +23,16 @@ var Express = function(){};
         if(err) errors.push(err);
         // Last request
         if(count == 0){
+            // Remove that from the list
+            syncronis_queue.splice(0, 1);
             // Call next incase this is synchronous
             next();
             // Done callback
-            if(_self.done){
+            if(_self.complete && syncronis_queue.length < 1){
                 // No errors, set to null for easy checking
                 if(errors.length < 1) errors = null;
                 // Callback
-                _self.done(errors);
+                _self.complete(errors);
                 // Reset errors
                 errors = [];
             }
@@ -42,13 +44,15 @@ var Express = function(){};
         if(syncronis_queue.length < 1) return;
         // Next request
         var req = syncronis_queue[0];
-        // Remove that from the list
-        syncronis_queue.splice(0, 1);
         // Call next request
         _self.ajax(req.url, req.method, req.data, req.callback);
     }
     // Config
     this.config = {};
+    // Done handler
+    this.done = function(callback){
+        _self.complete = callback;
+    }
     // Ajax handler
     this.ajax = function (url, method, data, callback) {
         // Syncronis mode
