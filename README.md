@@ -76,7 +76,7 @@ URL  | yes | string
 Data  | no | object 
 Callback  | no | function 
 
-Express.ajax(url, data, callback);
+Express.ajax(url, method, data, callback);
 
 Arguments  | Required | Type | default 
 ------------- | ------------- | ------------- | ------------- 
@@ -84,3 +84,9 @@ URL  | no | string | ```window.location.href```
 Method  | no | string | ```'GET'``` 
 Data  | no | object | ```{}``` 
 Callback  | no | function | ```null```
+
+Express.done(callback);
+
+Arguments  | Required | Type 
+------------- | ------------- | ------------- 
+Callback  | no | function 
