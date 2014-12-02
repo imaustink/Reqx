@@ -1,5 +1,6 @@
+// Client Express beta 1
 // Request class
-var Request = function(){};
+var Express = function(){};
 // Constructor
 (function(){
     // Global scope this
@@ -8,8 +9,12 @@ var Request = function(){};
     var count = 0;
     // Errors
     var errors = [];
-    // Syncronis request queue
-    var syncronis_queue = [];
+    // synchronous request queue
+    var synchronous_queue = [];
+    // Version
+    this.version = 'Alpha '+1.0;
+    // Config
+    this.config = {};
     // Request started
     var start = function () {
         // Incriment pending reqest counter
@@ -19,20 +24,27 @@ var Request = function(){};
     var done = function (err) {
         // Decrement pending reqest counter
         count--;
-        // Save error
-        if(err) errors.push(err);
+        // Had an error
+        if(err){
+            // Save error
+            errors.push(err);
+            // Error callback
+            if(_self.error_callback) _self.error_callback(err);
+        } 
         // Last request
         if(count == 0){
-            // Remove that from the list
-            syncronis_queue.splice(0, 1);
-            // Call next incase this is synchronous
-            next();
+            // Call next synchronous
+            if(synchronous_queue.length > 0) next();
+            // Remove last from the list
+            synchronous_queue.splice(0, 1);
             // Done callback
-            if(_self.complete && syncronis_queue.length < 1){
+            if(_self.callback && synchronous_queue.length < 1){
                 // No errors, set to null for easy checking
                 if(errors.length < 1) errors = null;
                 // Callback
-                _self.complete(errors);
+                _self.callback(errors);
+                // Reset callback for next request
+                _self.callback = null;
                 // Reset errors
                 errors = [];
             }
@@ -41,21 +53,27 @@ var Request = function(){};
     // Next synchronous request
     var next = function(){
         // No more requests
-        if(syncronis_queue.length < 1) return;
+        if(synchronous_queue.length < 1) return;
         // Next request
-        var req = syncronis_queue[0];
+        var req = synchronous_queue[0];
         // Call next request
         _self.ajax(req.url, req.method, req.data, req.callback);
     }
-    // Config
-    this.config = {};
-    // Done handler
+    // Done callback setter
     this.done = function(callback){
-        _self.complete = callback;
+        if(typeof callback !== 'function') return console.warn('Express.done() only accepts functions');
+        _self.callback = callback;
+        return this;
+    }
+    // Error callback setter
+    this.error = function(callback){
+        if(typeof callback !== 'function') return console.warn('Express.errors() only accepts functions');
+        _self.error_callback = callback;
+        return this;
     }
     // Ajax handler
     this.ajax = function (url, method, data, callback) {
-        // Syncronis mode
+        // synchronous mode
         if(_self.config.sync && count > 0){
             // Objectify request
             var save = {
@@ -65,7 +83,7 @@ var Request = function(){};
                 callback: callback
             }
             // Save it for later
-            syncronis_queue.push(save);
+            synchronous_queue.push(save);
             return this;
         }
         //Only URL and callback
@@ -91,8 +109,8 @@ var Request = function(){};
             done();
         }).error(function(jqXHR, status, message){
             // Fail
-            if(callback) callback(message);
-            done(message);
+            if(callback) callback(jqXHR);
+            done(jqXHR);
         });
         return this;
     }
@@ -114,4 +132,4 @@ var Request = function(){};
         this.ajax(url, 'POST', data, callback);
         return this;
     };
-}).call(Request);
+}).call(Express);
