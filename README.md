@@ -1,7 +1,7 @@
-Client-Express
+AJAX-Express
 ==============
 
-A lightweight library for simplifying jQuery AJAX calls while emulating the use of Express module for Node.js with built in synchronous and asynchronous request handlers.
+A lightweight library for simplifying jQuery AJAX calls while emulating the syntax of Express module for Node.js with built in synchronous and asynchronous request handlers.
 
 Examples
 ==============
@@ -61,6 +61,7 @@ When ```Request.config.sync``` is set to ```true``` each request in the chain wi
 Docs
 ==============
 Express.post(url, data, callback);
+--------------
 
 Create a post request.
 
@@ -71,6 +72,7 @@ Data  | no | object
 Callback  | no | function 
 
 Express.get(url, data, callback);
+--------------
 
 Create a get request.
 
@@ -81,6 +83,7 @@ Data  | no | object
 Callback  | no | function 
 
 Express.ajax(url, method, data, callback);
+--------------
 
 Create AJAX requests.
 
@@ -92,9 +95,19 @@ Data  | no | object | ```{}```
 Callback  | no | function | ```null```
 
 Express.done(callback);
+--------------
 
 Create done callback on chained requests
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
 Callback  | no | function 
+
+Express.done(callback);
+--------------
+
+Create error callback on chained requests
+
+Arguments  | Required | Type 
+------------- | ------------- | ------------- 
+Callback  | yes | function 
