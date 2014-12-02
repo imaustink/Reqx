@@ -98,7 +98,9 @@ Arguments  | Required | Type
 URL  | no | string 
 Data  | no | object 
 Callback  | no | function 
-```Express.get(url, data, callback);```
+```javascript
+Express.get(url, data, callback);
+```
 
 Example:
 ```javascript
@@ -122,7 +124,9 @@ URL  | no | string | ```window.location.href```
 Method  | no | string | ```'GET'``` 
 Data  | no | object | ```{}``` 
 Callback  | no | function | ```null```
-```Express.ajax(url, method, data, callback);```
+```javascript
+Express.ajax(url, method, data, callback);
+```
 
 Example:
 ```javascript
@@ -142,7 +146,9 @@ Express.done();
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
 Callback  | yes | function 
-```Express.done(callback);```
+```javascript
+Express.done(callback);
+```
 
 Example:
 ```javascript
@@ -167,7 +173,9 @@ Express.error();
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
 Callback  | yes | function 
-```Express.error(callback);```
+```javascript
+Express.error(callback);
+```
 
 Example:
 ```javascript
