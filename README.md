@@ -7,7 +7,7 @@ Examples
 ==============
 
 Basic use of .get()
-```
+```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.get('/resource', function(err, result){
@@ -19,7 +19,7 @@ Request.get('/resource', function(err, result){
 ```
 
 Basic use of .post()
-```
+```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
@@ -31,7 +31,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 ```
 
 Chaining requests with a done callback
-```
+```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
@@ -50,7 +50,7 @@ Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
 ```
 
 Syncronis request
-```
+```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.config.sync = true;
@@ -73,7 +73,7 @@ Data  | no | object
 Callback  | no | function 
 
 Example:
-```
+```javascript
 var Request = Express;
 Request.get('/resource', function(err, result){
     // Handle error
@@ -95,7 +95,7 @@ Data  | no | object
 Callback  | no | function 
 
 Example:
-```
+```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
@@ -119,7 +119,7 @@ Data  | no | object | ```{}```
 Callback  | no | function | ```null```
 
 Example:
-```
+```javascript
 var Request = Express;
 Express.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
     // Handle error
@@ -139,7 +139,7 @@ Arguments  | Required | Type
 Callback  | yes | function 
 
 Example:
-```
+```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
@@ -165,7 +165,7 @@ Callback  | yes | function
 
 Example:
 
-```
+```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
