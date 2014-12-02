@@ -75,8 +75,8 @@ Arguments  | Required | Type
 URL  | no | string 
 Data  | no | object 
 Callback  | no | function 
-
 ```Express.post(url, data, callback);```
+
 Example:
 ```javascript
 var Request = Express;
@@ -88,7 +88,7 @@ Request.get('/resource', function(err, result){
 });
 ```
 
-Express.get(url, data, callback);
+Express.get();
 --------------
 
 .get() is a simple GET request handler designed to be easy and fast to program, much like .post().
@@ -98,6 +98,7 @@ Arguments  | Required | Type
 URL  | no | string 
 Data  | no | object 
 Callback  | no | function 
+```Express.get(url, data, callback);```
 
 Example:
 ```javascript
@@ -110,7 +111,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.ajax(url, method, data, callback);
+Express.ajax();
 --------------
 
 .ajax is versatile request handler designed to be more programmable and support all methods, a little more advanced than .post() or .get().
@@ -121,6 +122,7 @@ URL  | no | string | ```window.location.href```
 Method  | no | string | ```'GET'``` 
 Data  | no | object | ```{}``` 
 Callback  | no | function | ```null```
+```Express.ajax(url, method, data, callback);```
 
 Example:
 ```javascript
@@ -133,13 +135,14 @@ Express.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.done(callback);
+Express.done();
 --------------
 .done() is a callback setter ready to attach to any request chain.
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
 Callback  | yes | function 
+```Express.done(callback);```
 
 Example:
 ```javascript
@@ -156,17 +159,17 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.error(callback);
+Express.error();
 --------------
 
-.done() is a error callback setter ready to attach to any request chain.
+.error() is a error callback setter ready to attach to any request chain.
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
 Callback  | yes | function 
+```Express.error(callback);```
 
 Example:
-
 ```javascript
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
