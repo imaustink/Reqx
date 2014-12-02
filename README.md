@@ -34,6 +34,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 ```
 
 Chaining requests with a done callback
+--------------
 ```javascript
 var Request = Express;
 // Start a POST request
