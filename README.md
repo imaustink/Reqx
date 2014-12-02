@@ -62,10 +62,10 @@ When ```Request.config.sync``` is set to ```true``` each request in the chain wi
 Docs
 ==============
 
-Express.post(url, data, callback);
+Express.post()
 --------------
 
-Make a post request.
+.post() is a simple POST request handler designed to be easy and fast to program, much like .get().
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
@@ -73,6 +73,7 @@ URL  | no | string
 Data  | no | object 
 Callback  | no | function 
 
+```Express.post(url, data, callback);```
 Example:
 ```javascript
 var Request = Express;
@@ -87,7 +88,7 @@ Request.get('/resource', function(err, result){
 Express.get(url, data, callback);
 --------------
 
-Make a get request.
+.get() is a simple GET request handler designed to be easy and fast to program, much like .post().
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
@@ -109,7 +110,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 Express.ajax(url, method, data, callback);
 --------------
 
-Make an AJAX request.
+.ajax is versatile request handler designed to be more programmable and support all methods, a little more advanced than .post() or .get().
 
 Arguments  | Required | Type | default 
 ------------- | ------------- | ------------- | ------------- 
@@ -131,8 +132,7 @@ Express.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
 
 Express.done(callback);
 --------------
-
-Create done callback on chained request(s)
+.done() is a callback setter ready to attach to any request chain.
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
@@ -156,7 +156,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 Express.error(callback);
 --------------
 
-Create error callback on chained request(s)
+.done() is a error callback setter ready to attach to any request chain.
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
