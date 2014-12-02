@@ -6,7 +6,8 @@ A lightweight library for simplifying jQuery AJAX calls while emulating the synt
 Examples
 ==============
 
-Basic use of .get()
+Make a GET request
+--------------
 ```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
@@ -19,7 +20,8 @@ Request.get('/resource', function(err, result){
 });
 ```
 
-Basic use of .post()
+Make a POST request
+--------------
 ```javascript
 var Request = Express;
 // Start POST request
