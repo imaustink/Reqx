@@ -54,11 +54,26 @@ Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
 });
 ```
 
-Syncronis request
+Synchronous request
+--------------
 ```javascript
 var Request = Express;
+// Setup synchronous mode
 Request.config.sync = true;
-Request.post('/test').get('/test').post('/test').get('/test').post('/test').get('/test');
+Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
+    if(err) return;
+    drawStats(result);
+// Start a GET request
+}).get('/template/heading.html', function(err, result){
+    if(err) return;
+    $('#Target').html(result);
+// Setup done callback
+}).done(function(errors){
+    // Check errors array
+    if(errors) return handleErrors(errors);
+    // Do something when it's all done
+    $('#Conatainer').show();
+});
 ```
 When javascriptRequest.config.sync is set to true each request in the chain will be handled synchronously.
 
