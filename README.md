@@ -60,7 +60,7 @@ var Request = Express;
 Request.config.sync = true;
 Request.post('/test').get('/test').post('/test').get('/test').post('/test').get('/test');
 ```
-When ```Request.config.sync``` is set to ```true``` each request in the chain will be handled synchronously.
+When javascriptRequest.config.sync is set to true each request in the chain will be handled synchronously.
 
 Docs
 ==============
@@ -75,7 +75,9 @@ Arguments  | Required | Type
 URL  | no | string 
 Data  | no | object 
 Callback  | no | function 
-```Express.post(url, data, callback);```
+```javascript
+Express.post(url, data, callback);
+```
 
 Example:
 ```javascript
@@ -120,10 +122,10 @@ Express.ajax();
 
 Arguments  | Required | Type | default 
 ------------- | ------------- | ------------- | ------------- 
-URL  | no | string | ```window.location.href``` 
-Method  | no | string | ```'GET'``` 
-Data  | no | object | ```{}``` 
-Callback  | no | function | ```null```
+URL  | no | string | window.location.href 
+Method  | no | string | 'GET' 
+Data  | no | object | {} 
+Callback  | no | function | null
 ```javascript
 Express.ajax(url, method, data, callback);
 ```
