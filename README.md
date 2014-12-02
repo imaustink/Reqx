@@ -60,21 +60,33 @@ When ```Request.config.sync``` is set to ```true``` each request in the chain wi
 
 Docs
 ==============
+
 Express.post(url, data, callback);
 --------------
 
-Create a post request.
+Make a post request.
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
 URL  | no | string 
 Data  | no | object 
 Callback  | no | function 
+
+Example:
+```
+var Request = Express;
+Request.get('/resource', function(err, result){
+    // Handle error
+    if(err) throw err;
+    // Do something with result
+    alert(result);
+});
+```
 
 Express.get(url, data, callback);
 --------------
 
-Create a get request.
+Make a get request.
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
@@ -82,10 +94,22 @@ URL  | no | string
 Data  | no | object 
 Callback  | no | function 
 
+Example:
+```
+// Store express in variable to avoid collisions when dealing with other request chains
+var Request = Express;
+Request.post('/resource', { data: 'example' }, function(err, result){
+    // Handle error
+    if(err) throw err;
+    // Do something with result
+    alert(result);
+});
+```
+
 Express.ajax(url, method, data, callback);
 --------------
 
-Create AJAX requests.
+Make an AJAX request.
 
 Arguments  | Required | Type | default 
 ------------- | ------------- | ------------- | ------------- 
@@ -94,20 +118,65 @@ Method  | no | string | ```'GET'```
 Data  | no | object | ```{}``` 
 Callback  | no | function | ```null```
 
+Example:
+```
+var Request = Express;
+Express.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
+    // Handle error
+    if(err) throw err;
+    // Do something with result
+    alert(result);
+});
+```
+
 Express.done(callback);
 --------------
 
-Create done callback on chained requests
-
-Arguments  | Required | Type 
-------------- | ------------- | ------------- 
-Callback  | no | function 
-
-Express.done(callback);
---------------
-
-Create error callback on chained requests
+Create done callback on chained request(s)
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
 Callback  | yes | function 
+
+Example:
+```
+// Store express in variable to avoid collisions when dealing with other request chains
+var Request = Express;
+Request.post('/resource', { data: 'example' }, function(err, result){
+    if(err) throw err;
+    handleResult(result);
+}).get('/template', function(err, result){
+    if(err) throw err;
+    append(result);
+}).done(function(errors){
+    if(error) return handleErrors(errors);
+    $('#Template').show();
+});
+```
+
+Express.error(callback);
+--------------
+
+Create error callback on chained request(s)
+
+Arguments  | Required | Type 
+------------- | ------------- | ------------- 
+Callback  | yes | function 
+
+Example:
+
+```
+// Store express in variable to avoid collisions when dealing with other request chains
+var Request = Express;
+Request.post('/resource', { data: 'example' }, function(err, result){
+    if(err) throw err;
+    handleResult(result);
+}).get('/template', function(err, result){
+    if(err) throw err;
+    append(result);
+}).error(function(err){
+    handleError(err);
+}).done(function(){
+    $('#Template').show();
+});
+```
