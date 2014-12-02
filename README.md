@@ -10,48 +10,49 @@ Basic use of .get()
 ```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
+// Start GET request
 Request.get('/resource', function(err, result){
-    // Handle error
-    if(err) throw err;
-    // Do something with result
+    // Check for error
+    if(err) return alert(err);
+    // Alert response
     alert(result);
 });
 ```
 
 Basic use of .post()
 ```javascript
-// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
+// Start POST request
 Request.post('/resource', { data: 'example' }, function(err, result){
-    // Handle error
-    if(err) throw err;
-    // Do something with result
+    // Check for error
+    if(err) return alert(err);
+    // Alert response
     alert(result);
 });
 ```
 
 Chaining requests with a done callback
 ```javascript
-// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
+// Start a POST request
 Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
-    // handle error
-    if(err) return alert(err);
-    // Send response to handler
+    if(err) return;
     drawStats(result);
+// Start a GET request
 }).get('/template/heading.html', function(err, result){
-    // Handle error
-    if(err) return alert(err);
-    // Append response to target
+    if(err) return;
     $('#Target').html(result);
-}).done(function(err){
+// Setup done callback
+}).done(function(errors){
+    // Check errors array
+    if(errors) return handleErrors(errors);
+    // Do something when it's all done
     $('#Conatainer').show();
 });
 ```
 
 Syncronis request
 ```javascript
-// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.config.sync = true;
 Request.post('/test').get('/test').post('/test').get('/test').post('/test').get('/test');
@@ -77,7 +78,7 @@ Example:
 var Request = Express;
 Request.get('/resource', function(err, result){
     // Handle error
-    if(err) throw err;
+    if(err) return alert(err);
     // Do something with result
     alert(result);
 });
@@ -96,11 +97,10 @@ Callback  | no | function
 
 Example:
 ```javascript
-// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
     // Handle error
-    if(err) throw err;
+    if(err) return alert(err);
     // Do something with result
     alert(result);
 });
@@ -123,7 +123,7 @@ Example:
 var Request = Express;
 Express.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
     // Handle error
-    if(err) throw err;
+    if(err) return alert(err);
     // Do something with result
     alert(result);
 });
@@ -140,13 +140,12 @@ Callback  | yes | function
 
 Example:
 ```javascript
-// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
-    if(err) throw err;
+    if(err) return alert(err);
     handleResult(result);
 }).get('/template', function(err, result){
-    if(err) throw err;
+    if(err) return alert(err);
     append(result);
 }).done(function(errors){
     if(error) return handleErrors(errors);
@@ -166,13 +165,12 @@ Callback  | yes | function
 Example:
 
 ```javascript
-// Store express in variable to avoid collisions when dealing with other request chains
 var Request = Express;
 Request.post('/resource', { data: 'example' }, function(err, result){
-    if(err) throw err;
+    if(err) return alert(err);
     handleResult(result);
 }).get('/template', function(err, result){
-    if(err) throw err;
+    if(err) return alert(err);
     append(result);
 }).error(function(err){
     handleError(err);
