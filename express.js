@@ -42,7 +42,7 @@ var Express = function(){};
             // Done callback
             if(_self.callback && synchronous_queue.length < 1 && count < 1){
                 // No errors, set to null for easy checking
-                if(errors.length < 1) errors = null;
+                if(!errors || errors.length < 1) errors = null;
                 // Callback
                 _self.callback(errors);
                 // Reset callback for next request
