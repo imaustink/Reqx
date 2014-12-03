@@ -35,10 +35,8 @@ var Express = function(){};
         if(count == 0){
             // Call next synchronous
             if(synchronous_queue.length > 0) next();
-            // Remove last from the list
-            synchronous_queue.splice(0, 1);
             // Done callback
-            if(_self.callback && synchronous_queue.length < 1){
+            if(_self.callback && synchronous_queue.length < 1 && count < 1){
                 // No errors, set to null for easy checking
                 if(errors.length < 1) errors = null;
                 // Callback
