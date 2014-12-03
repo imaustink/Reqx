@@ -26,6 +26,8 @@ var Express = function(){};
         count--;
         // Had an error
         if(err){
+            // Reset errors array
+            if(!errors) errors = [];
             // Save error
             errors.push(err);
             // Error callback
@@ -45,8 +47,6 @@ var Express = function(){};
                 _self.callback(errors);
                 // Reset callback for next request
                 _self.callback = null;
-                // Reset errors
-                errors = [];
             }
         } 
     }
