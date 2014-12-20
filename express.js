@@ -102,7 +102,8 @@ var Express = function(){};
             url: url,
             cache: _self.config.cache || false,
             type: method || _self.config.default_method || 'GET',
-            data: data || {}
+            data: data || {},
+            dataType: _self.config.default_dataType || 'json'
         }).done(function(result) {
             // Success
             if(callback) callback(null, result);
