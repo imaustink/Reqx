@@ -73,6 +73,19 @@ var Express = function(){};
     }
     // Ajax handler
     this.ajax = function (url, method, data, callback) {
+        // again
+        var again = function(){
+            if(_self.config.sync && count > 0){
+                synchronous_queue.push({
+                    url: url,
+                    method: method,
+                    data: data,
+                    callback: callback
+                });
+                return
+            }
+            _self.ajax(url, method, data, callback);
+        }
         // synchronous mode
         if(_self.config.sync && count > 0){
             // Objectify request
@@ -106,10 +119,11 @@ var Express = function(){};
             dataType: _self.config.default_dataType || 'json'
         }).done(function(result) {
             // Success
-            if(callback) callback(null, result);
+            if(callback) callback(null, result, again);
             done();
         }).error(function(jqXHR, status, message){
             // Fail
+            console.log('Fails');
             if(callback) callback(jqXHR);
             done(jqXHR);
         });
