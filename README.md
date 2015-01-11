@@ -1,4 +1,4 @@
-AJAX-Express
+ReqX
 ==============
 
 A lightweight library for simplifying jQuery AJAX calls while emulating the syntax of Express module for Node.js with built in synchronous and asynchronous request handlers.
