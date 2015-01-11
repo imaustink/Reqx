@@ -76,7 +76,7 @@ var Express = function(){};
         // again
         var again = function(){
             if(_self.config.sync && count > 0){
-                synchronous_queue.push({
+                synchronous_queue.unshift({
                     url: url,
                     method: method,
                     data: data,
