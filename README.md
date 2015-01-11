@@ -105,7 +105,7 @@ Request.get('/resource', function(err, result){
 });
 ```
 
-Express.get();
+Express.get()
 --------------
 
 .get() is a simple GET request handler designed to be easy and fast to program, much like .post().
@@ -130,7 +130,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.ajax();
+Express.ajax()
 --------------
 
 .ajax is versatile request handler designed to be more programmable and support all methods, a little more advanced than .post() or .get().
@@ -156,7 +156,7 @@ Express.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.done();
+Express.done()
 --------------
 .done() is a callback setter ready to attach to any request chain.
 
@@ -182,7 +182,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.error();
+Express.error()
 --------------
 
 .error() is a error callback setter ready to attach to any request chain.
