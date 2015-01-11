@@ -218,4 +218,4 @@ Options | Default | Description | Example
 Synchronous  | false | Enable synchronous request handler | Express.config.sync = true
 Caching  | false | Enable caching on requests | Express.config.cache = true
 Data Type  | 'json' | Set default data type | Express.config.default_dataType = 'html' 
-Default Method  | 'GET' | Set default method for Express.AJAX | Express.config.default_method = 'GET';
+Default Method  | 'GET' | Set default method for Express.AJAX | Express.config.default_method = 'GET'
