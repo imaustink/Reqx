@@ -1,6 +1,6 @@
-// Client Express beta 1
+// ReqX beta 1.1
 // Request class
-var Express = function(){};
+var ReqX = function(){};
 // Constructor
 (function(){
     // Global scope this
@@ -61,13 +61,13 @@ var Express = function(){};
     }
     // Done callback setter
     this.done = function(callback){
-        if(typeof callback !== 'function') return console.warn('Express.done() only accepts functions');
+        if(typeof callback !== 'function') return console.warn('ReqX.done() only accepts functions');
         _self.callback = callback;
         return this;
     }
     // Error callback setter
     this.error = function(callback){
-        if(typeof callback !== 'function') return console.warn('Express.errors() only accepts functions');
+        if(typeof callback !== 'function') return console.warn('ReqX.errors() only accepts functions');
         _self.error_callback = callback;
         return this;
     }
@@ -147,4 +147,4 @@ var Express = function(){};
         this.ajax(url, 'POST', data, callback);
         return this;
     };
-}).call(Express);
+}).call(ReqX);
