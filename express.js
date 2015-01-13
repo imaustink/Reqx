@@ -1,8 +1,7 @@
-// ReqX beta 1.1
-// Request class
-var ReqX = function(){};
-// Constructor
-(function(){
+// Request class constructor
+var ReqX = function(config){
+    // Version
+    this.version = 1.2+' (Beta)';
     // Global scope this
     var _self = this;
     // Pending request counter
@@ -11,10 +10,8 @@ var ReqX = function(){};
     var errors = [];
     // synchronous request queue
     var synchronous_queue = [];
-    // Version
-    this.version = 'Alpha '+1.0;
     // Config
-    this.config = {};
+    if(!config) config = {};
     // Request started
     var start = function () {
         // Incriment pending reqest counter
@@ -75,7 +72,7 @@ var ReqX = function(){};
     this.ajax = function (url, method, data, callback) {
         // again
         var again = function(){
-            if(_self.config.sync && count > 0){
+            if(config.sync && count > 0){
                 synchronous_queue.unshift({
                     url: url,
                     method: method,
@@ -87,7 +84,7 @@ var ReqX = function(){};
             _self.ajax(url, method, data, callback);
         }
         // synchronous mode
-        if(_self.config.sync && count > 0){
+        if(config.sync && count > 0){
             // Objectify request
             var save = {
                 url: url,
@@ -113,17 +110,16 @@ var ReqX = function(){};
         // Make request
         $.ajax({
             url: url,
-            cache: _self.config.cache || false,
-            type: method || _self.config.default_method || 'GET',
+            cache: config.cache || false,
+            type: method || config.default_method || 'GET',
             data: data || {},
-            dataType: _self.config.default_dataType || 'json'
+            dataType: config.dataType
         }).done(function(result) {
             // Success
             if(callback) callback(null, result, again);
             done();
         }).error(function(jqXHR, status, message){
             // Fail
-            console.log('Fails');
             if(callback) callback(jqXHR);
             done(jqXHR);
         });
@@ -147,4 +143,5 @@ var ReqX = function(){};
         this.ajax(url, 'POST', data, callback);
         return this;
     };
-}).call(ReqX);
+    return this;
+};

@@ -10,7 +10,7 @@ Make a GET request
 --------------
 ```javascript
 // Store express in variable to avoid collisions when dealing with other request chains
-var Request = Express;
+var Request = ReqX();
 // Start GET request
 Request.get('/resource', function(err, result){
     // Check for error
@@ -23,7 +23,7 @@ Request.get('/resource', function(err, result){
 Make a POST request
 --------------
 ```javascript
-var Request = Express;
+var Request = ReqX();
 // Start POST request
 Request.post('/resource', { data: 'example' }, function(err, result){
     // Check for error
@@ -36,7 +36,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 Chaining requests with a done callback
 --------------
 ```javascript
-var Request = Express;
+var Request = ReqX();
 // Start a POST request
 Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
     if(err) return;
@@ -57,9 +57,8 @@ Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
 Synchronous request
 --------------
 ```javascript
-var Request = Express;
+var Request = ReqX({ config.sync: true });
 // Setup synchronous mode
-Request.config.sync = true;
 Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
     if(err) return;
     drawStats(result);
@@ -80,7 +79,7 @@ When javascriptRequest.config.sync is set to true each request in the chain will
 Docs
 ==============
 
-Express.post()
+ReqX().post()
 --------------
 
 .post() is a simple POST request handler designed to be easy and fast to program, much like .get().
@@ -91,12 +90,12 @@ URL  | no | string
 Data  | no | object 
 Callback  | no | function 
 ```javascript
-Express.post(url, data, callback);
+ReqX().post(url, data, callback);
 ```
 
 Example:
 ```javascript
-var Request = Express;
+var Request = ReqX();
 Request.get('/resource', function(err, result){
     // Handle error
     if(err) return alert(err);
@@ -105,7 +104,7 @@ Request.get('/resource', function(err, result){
 });
 ```
 
-Express.get()
+ReqX().get()
 --------------
 
 .get() is a simple GET request handler designed to be easy and fast to program, much like .post().
@@ -116,12 +115,12 @@ URL  | no | string
 Data  | no | object 
 Callback  | no | function 
 ```javascript
-Express.get(url, data, callback);
+ReqX().get(url, data, callback);
 ```
 
 Example:
 ```javascript
-var Request = Express;
+var Request = ReqX();
 Request.post('/resource', { data: 'example' }, function(err, result){
     // Handle error
     if(err) return alert(err);
@@ -130,7 +129,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.ajax()
+ReqX().ajax()
 --------------
 
 .ajax is versatile request handler designed to be more programmable and support all methods, a little more advanced than .post() or .get().
@@ -142,13 +141,13 @@ Method  | no | string | 'GET'
 Data  | no | object | {} 
 Callback  | no | function | null
 ```javascript
-Express.ajax(url, method, data, callback);
+ReqX().ajax(url, method, data, callback);
 ```
 
 Example:
 ```javascript
-var Request = Express;
-Express.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
+var Request = ReqX();
+Request.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
     // Handle error
     if(err) return alert(err);
     // Do something with result
@@ -156,7 +155,7 @@ Express.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.done()
+ReqX().done()
 --------------
 .done() is a callback setter ready to attach to any request chain.
 
@@ -164,12 +163,12 @@ Arguments  | Required | Type
 ------------- | ------------- | ------------- 
 Callback  | yes | function 
 ```javascript
-Express.done(callback);
+ReqX().done(callback);
 ```
 
 Example:
 ```javascript
-var Request = Express;
+var Request = ReqX();
 Request.post('/resource', { data: 'example' }, function(err, result){
     if(err) return alert(err);
     handleResult(result);
@@ -182,7 +181,7 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.error()
+ReqX().error()
 --------------
 
 .error() is a error callback setter ready to attach to any request chain.
@@ -191,12 +190,12 @@ Arguments  | Required | Type
 ------------- | ------------- | ------------- 
 Callback  | yes | function 
 ```javascript
-Express.error(callback);
+ReqX().error(callback);
 ```
 
 Example:
 ```javascript
-var Request = Express;
+var Request = ReqX();
 Request.post('/resource', { data: 'example' }, function(err, result){
     if(err) return alert(err);
     handleResult(result);
@@ -210,12 +209,41 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 });
 ```
 
-Express.config options
+ReqX(config) options
 --------------
+
+When initing ReqX you can pass an options object for configuring that instance of ReqX.
 
 Options | Default | Description | Example 
 ------------- | ------------- | ------------- | ------------- 
-Synchronous  | false | Enable synchronous request handler | Express.config.sync = true
-Caching  | false | Enable caching on requests | Express.config.cache = true
-Data Type  | 'json' | Set default data type | Express.config.default_dataType = 'html' 
-Default Method  | 'GET' | Set default method for Express.AJAX | Express.config.default_method = 'GET'
+Synchronous  | false | Enable synchronous request handler | ReqX({ sync: true })
+Caching  | false | Enable caching on requests | ReqX({ cache: true })
+Data Type  | undefined | Set default data type | ReqX({ dataType: 'json' })
+Default Method  | 'GET' | Set default method for Express.AJAX | ReqX({ default_method: 'POST' })
+
+Callback
+--------------
+
+Each request handler within ReqX have an optional callback that contains 3 arguments: err, result and again.
+
+Argument | Name | Description 
+------------- | ------------- | ------------- 
+1  | Error | If an error is ecountered with a request it will be stored in the first argument of the callback. If no error the first argument will be ```null```. 
+2  | Result | If the request was successful the response will be stored in the second argument of the callback. 
+3  | Again | The third argument of the callback contains a helper function for recursive requests. Call the third argument as a function to call the current request again.
+
+Example:
+```javascript
+var Request = ReqX();
+Request.post('/resource', { data: 'example' }, function(err, result, again){
+    // if err return and throw
+    if(err) return alert(err);
+    // !err process result
+    if(result.status){
+        alert('Done!');
+    }else{
+        // Call this request again
+        again();
+    } 
+});
+```
