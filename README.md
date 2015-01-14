@@ -57,7 +57,7 @@ Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
 Synchronous request
 --------------
 ```javascript
-var Request = ReqX({ config.sync: true });
+var Request = ReqX({ sync: true });
 // Setup synchronous mode
 Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
     if(err) return;
@@ -74,7 +74,7 @@ Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
     $('#Conatainer').show();
 });
 ```
-When javascriptRequest.config.sync is set to true each request in the chain will be handled synchronously.
+Just set option ```{ sync: true }``` and each request in the chain will be handled synchronously.
 
 Docs
 ==============
