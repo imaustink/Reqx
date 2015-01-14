@@ -9,7 +9,7 @@ Examples
 Make a GET request
 --------------
 ```javascript
-// Store express in variable to avoid collisions when dealing with other request chains
+// Store Reqx in variable to avoid collisions when dealing with other request chains
 var Request = ReqX();
 // Start GET request
 Request.get('/resource', function(err, result){
@@ -219,9 +219,9 @@ Options | Default | Description | Example
 Synchronous  | false | Enable synchronous request handler | ReqX({ sync: true })
 Caching  | false | Enable caching on requests | ReqX({ cache: true })
 Data Type  | undefined | Set default data type | ReqX({ dataType: 'json' })
-Default Method  | 'GET' | Set default method for Express.AJAX | ReqX({ default_method: 'POST' })
+Default Method  | 'GET' | Set default method for ReqX.ajax() | ReqX({ default_method: 'POST' })
 
-Callback
+Callback function(err, result, again){}
 --------------
 
 Each request handler within ReqX have an optional callback that contains 3 arguments: err, result and again.
