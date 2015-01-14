@@ -219,7 +219,7 @@ Options | Default | Description | Example
 Synchronous  | false | Enable synchronous request handler | ReqX({ sync: true })
 Caching  | false | Enable caching on requests | ReqX({ cache: true })
 Data Type  | undefined | Set default data type | ReqX({ dataType: 'json' })
-Default Method  | 'GET' | Set default method for ReqX.ajax() | ReqX({ default_method: 'POST' })
+Default Method  | 'GET' | Set default method for ReqX().ajax() | ReqX({ default_method: 'POST' })
 
 Callback function(err, result, again){}
 --------------
