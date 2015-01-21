@@ -1,5 +1,7 @@
 // Request class constructor
 var ReqX = function(config){
+    // Prevent instance collision
+    if(!(this instanceof ReqX)) return new ReqX(config);
     // Version
     this.version = 1.2+' (Beta)';
     // Global scope this

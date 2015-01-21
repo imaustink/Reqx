@@ -9,10 +9,8 @@ Examples
 Make a GET request
 --------------
 ```javascript
-// Store Reqx in variable to avoid collisions when dealing with other request chains
-var Request = ReqX();
 // Start GET request
-Request.get('/resource', function(err, result){
+ReqX().get('/resource', function(err, result){
     // Check for error
     if(err) return alert(err);
     // Alert response
@@ -23,9 +21,8 @@ Request.get('/resource', function(err, result){
 Make a POST request
 --------------
 ```javascript
-var Request = ReqX();
 // Start POST request
-Request.post('/resource', { data: 'example' }, function(err, result){
+ReqX().post('/resource', { data: 'example' }, function(err, result){
     // Check for error
     if(err) return alert(err);
     // Alert response
@@ -36,9 +33,8 @@ Request.post('/resource', { data: 'example' }, function(err, result){
 Chaining requests with a done callback
 --------------
 ```javascript
-var Request = ReqX();
 // Start a POST request
-Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
+ReqX().post('/stats', { 'auth': 'authorization-key' }, function(err, result){
     if(err) return;
     drawStats(result);
 // Start a GET request
@@ -57,9 +53,8 @@ Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
 Synchronous request
 --------------
 ```javascript
-var Request = ReqX({ sync: true });
 // Setup synchronous mode
-Request.post('/stats', { 'auth': 'authorization-key' }, function(err, result){
+ReqX().post('/stats', { 'auth': 'authorization-key' }, function(err, result){
     if(err) return;
     drawStats(result);
 // Start a GET request
@@ -95,8 +90,7 @@ ReqX().post(url, data, callback);
 
 Example:
 ```javascript
-var Request = ReqX();
-Request.get('/resource', function(err, result){
+ReqX().get('/resource', function(err, result){
     // Handle error
     if(err) return alert(err);
     // Do something with result
@@ -120,8 +114,7 @@ ReqX().get(url, data, callback);
 
 Example:
 ```javascript
-var Request = ReqX();
-Request.post('/resource', { data: 'example' }, function(err, result){
+ReqX().post('/resource', { data: 'example' }, function(err, result){
     // Handle error
     if(err) return alert(err);
     // Do something with result
@@ -146,8 +139,7 @@ ReqX().ajax(url, method, data, callback);
 
 Example:
 ```javascript
-var Request = ReqX();
-Request.ajax('/resource', 'GET', { data: 'example' }, function(err, result){
+ReqX().ajax('/resource', 'GET', { data: 'example' }, function(err, result){
     // Handle error
     if(err) return alert(err);
     // Do something with result
@@ -168,8 +160,7 @@ ReqX().done(callback);
 
 Example:
 ```javascript
-var Request = ReqX();
-Request.post('/resource', { data: 'example' }, function(err, result){
+ReqX().post('/resource', { data: 'example' }, function(err, result){
     if(err) return alert(err);
     handleResult(result);
 }).get('/template', function(err, result){
@@ -195,8 +186,7 @@ ReqX().error(callback);
 
 Example:
 ```javascript
-var Request = ReqX();
-Request.post('/resource', { data: 'example' }, function(err, result){
+ReqX().post('/resource', { data: 'example' }, function(err, result){
     if(err) return alert(err);
     handleResult(result);
 }).get('/template', function(err, result){
@@ -234,8 +224,7 @@ Argument | Name | Description
 
 Example:
 ```javascript
-var Request = ReqX();
-Request.post('/resource', { data: 'example' }, function(err, result, again){
+ReqX().post('/resource', { data: 'example' }, function(err, result, again){
     // if err return and throw
     if(err) return alert(err);
     // !err process result
