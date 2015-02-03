@@ -112,7 +112,7 @@ var ReqX = function(config){
         // Make request
         $.ajax({
             url: url,
-            cache: config.cache || false,
+            cache: config.cache || true,
             type: method || config.default_method || 'GET',
             data: data || {},
             dataType: config.dataType
