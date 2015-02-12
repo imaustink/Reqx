@@ -122,7 +122,7 @@ var ReqX = function(config){
             done();
         }).error(function(jqXHR, status, message){
             // Fail
-            if(callback) callback(jqXHR);
+            if(callback) callback(jqXHR, null, again);
             done(jqXHR);
         });
         return this;
