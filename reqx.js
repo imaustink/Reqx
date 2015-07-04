@@ -13,13 +13,9 @@ var ReqX = function(config){
     var synchronous_queue = [];
     // Config
     if(!config) config = {};
-    // Request started
-    var started = function () {
-        // Incriment pending reqest counter
-        count++;
-    }
+
     // Request finished
-    var finished = function (err) {
+    function finished(err) {
         // Decrement pending reqest counter
         count--;
         // Had an error
@@ -49,13 +45,48 @@ var ReqX = function(config){
         } 
     }
     // Next synchronous request
-    var next = function(){
+    function next(){
         // No more requests
         if(synchronous_queue.length < 1) return;
         // Next request
         var req = synchronous_queue[0];
         // Call next request
         _self.ajax(req.url, req.method, req.data, req.callback);
+    }
+    // Request started
+    function started() {
+        // Incriment pending reqest counter
+        count++;
+    }
+    // Validate URL
+    function validateURL(url){
+        // Default to current root
+        if(!url || typeof url != 'string') window.location.href;
+        var s = url.indexOf('/');
+        var ss = url.indexOf('//');
+        var d = url.indexOf('.');
+        var p = url.indexOf('http');
+        // Subdirectory
+        if(s < 0 && d < 0 && p < 0) return window.location.href + '/' + url;
+        if(ss < 0 && (s == 0 || d < 0)) return window.location.href + (s > 0 ? '/' : '') + url;
+        // Protocal
+        if(url.indexOf('http') < 0) return window.location.protocol + (ss < 0 ? '//' : '') + url;
+        return url;
+    }
+    // Query
+    function queryString(url, vars){
+        if(!vars) return url;
+        if(url.indexOf('?') < 0){
+            url += '?';
+        }else{
+            if(url.lastIndexOf('?') != url.length - 1) url += '&';
+        }
+        var qs = '';
+        for(var v in vars){
+            if(qs) qs += '&'; 
+            qs += v + '=' + vars[v];
+        }
+        return url+qs;
     }
     // Get applicable reqauet opbject
     function xmlhttp(){
@@ -208,7 +239,15 @@ var ReqX = function(config){
             }
         }
         // Setup request
-        request.open(options.method, options.url, true);
+        // no cache option
+        if(options.cache === false) url = queryString(url, {t: Date.now()});
+        try{
+            request.open(options.method, queryString(validateURL(options.url), (options.method === 'GET' && typeof options.data === 'object' ? options.data : undefined)), true);
+        }catch(e){
+            var err = new Error('ReqX Error: Failed to open XMLHTTP request');
+            err.additional = e;
+            return console.error(err);
+        }
         // Set default header
         if(config.contentType != false) config.contentType ? request.setRequestHeader('Content-Type', config.contentType) : request.setRequestHeader('Content-Type', 'application/json');
         // Set custom headers
