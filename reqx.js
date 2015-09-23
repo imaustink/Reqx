@@ -145,5 +145,14 @@ var ReqX = function(config){
         this.ajax(url, 'POST', data, callback);
         return this;
     };
+    // PUT handler
+    this.put = function(url, data, callback){
+        if(!data){
+            callback = data;
+            data = undefined;
+        }
+        this.ajax(url, 'PUT', data, callback);
+        return this;
+    };
     return this;
 };
