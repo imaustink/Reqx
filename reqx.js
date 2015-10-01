@@ -115,7 +115,8 @@ var ReqX = function(config){
             cache: config.cache || true,
             type: method || config.default_method || 'GET',
             data: data || {},
-            dataType: config.dataType
+            dataType: config.dataType,
+            accepts: config.accepts
         }).done(function(result) {
             // Success
             if(callback) callback(null, result, again);
