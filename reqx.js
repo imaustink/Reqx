@@ -116,6 +116,7 @@ var ReqX = function(config){
             type: method || config.default_method || 'GET',
             data: data || {},
             dataType: config.dataType,
+            contentType: config.contentType,
             accepts: config.accepts
         }).done(function(result) {
             // Success
