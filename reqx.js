@@ -14,6 +14,12 @@ var ReqX = function(config){
     var synchronous_queue = [];
     // Config
     if(!config) config = {};
+    // JSON mode
+    if(config.json === true){
+        config.contentType = 'application/json';
+        config.dataType = 'json';
+        config.accepts = 'json';
+    }
     // Request started
     var start = function () {
         // Incriment pending reqest counter
@@ -108,6 +114,7 @@ var ReqX = function(config){
             callback = data;
             data = undefined;
         }
+        if(config.json == true && typeof data === 'object') data = JSON.stringify(data);
         start();
         // Make request
         $.ajax({
