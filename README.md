@@ -208,7 +208,10 @@ Options | Default | Description | Example
 ------------- | ------------- | ------------- | ------------- 
 Synchronous  | false | Enable synchronous request handler | ReqX({ sync: true })
 Caching  | false | Enable caching on requests | ReqX({ cache: true })
-Data Type  | undefined | Set default data type | ReqX({ dataType: 'json' })
+Accepts  | undefined | Set accepts | ReqX({ accpets: 'json' })
+Data Type  | undefined | Set data type | ReqX({ dataType: 'json' })
+Content Type  | undefined | Set content type | ReqX({ dataType: 'json' })
+JSON mode | undefined | Sends request as JSON | ReqX({ json: true })
 Default Method  | 'GET' | Set default method for ReqX().ajax() | ReqX({ default_method: 'POST' })
 
 Callback function(err, result, again){}
