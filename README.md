@@ -77,7 +77,7 @@ Docs
 ReqX().post()
 --------------
 
-.post() is a simple POST request handler designed to be easy and fast to program, much like .get().
+.post() is a simple POST request handler designed to be easy and fast to program.
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
@@ -98,10 +98,34 @@ ReqX().get('/resource', function(err, result){
 });
 ```
 
+ReqX().put()
+--------------
+
+.put() is a simple PUT request handler designed to be easy and fast to program.
+
+Arguments  | Required | Type
+------------- | ------------- | -------------
+URL  | no | string
+Data  | no | object
+Callback  | no | function
+```javascript
+ReqX().get(url, data, callback);
+```
+
+Example:
+```javascript
+ReqX().post('/resource', { data: 'example' }, function(err, result){
+    // Handle error
+    if(err) return alert(err);
+    // Do something with result
+    alert(result);
+});
+```
+
 ReqX().get()
 --------------
 
-.get() is a simple GET request handler designed to be easy and fast to program, much like .post().
+.get() is a simple GET request handler designed to be easy and fast to program.
 
 Arguments  | Required | Type 
 ------------- | ------------- | ------------- 
@@ -210,7 +234,7 @@ Synchronous  | false | Enable synchronous request handler | ReqX({ sync: true })
 Caching  | false | Enable caching on requests | ReqX({ cache: true })
 Accepts  | undefined | Set accepts | ReqX({ accpets: 'json' })
 Data Type  | undefined | Set data type | ReqX({ dataType: 'json' })
-Content Type  | undefined | Set content type | ReqX({ dataType: 'json' })
+Content Type  | undefined | Set content type | ReqX({ contentType: 'json' })
 JSON mode | undefined | Sends request as JSON | ReqX({ json: true })
 Default Method  | 'GET' | Set default method for ReqX().ajax() | ReqX({ default_method: 'POST' })
 

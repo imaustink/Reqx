@@ -3,7 +3,7 @@ var ReqX = function(config){
     // Prevent instance collision
     if(!(this instanceof ReqX)) return new ReqX(config);
     // Version
-    this.version = 1.2+' (Beta)';
+    this.version = '0.3.1 (beta)';
     // Global scope this
     var _self = this;
     // Pending request counter
@@ -20,11 +20,13 @@ var ReqX = function(config){
         config.dataType = 'json';
         config.accepts = 'json';
     }
+    // Default to GET
+    if(!config.default_method) config.default_method = 'GET';
     // Request started
     var start = function () {
         // Incriment pending reqest counter
         count++;
-    }
+    };
     // Request done
     var done = function (err) {
         // Decrement pending reqest counter
@@ -37,7 +39,7 @@ var ReqX = function(config){
             errors.push(err);
             // Error callback
             if(_self.error_callback) _self.error_callback(err);
-        } 
+        }
         // Last request
         if(count == 0){
             // Call next synchronous
@@ -53,8 +55,8 @@ var ReqX = function(config){
                 // Reset callback for next request
                 _self.callback = null;
             }
-        } 
-    }
+        }
+    };
     // Next synchronous request
     var next = function(){
         // No more requests
@@ -63,19 +65,19 @@ var ReqX = function(config){
         var req = synchronous_queue[0];
         // Call next request
         _self.ajax(req.url, req.method, req.data, req.callback);
-    }
+    };
     // Done callback setter
     this.done = function(callback){
         if(typeof callback !== 'function') return console.warn('ReqX.done() only accepts functions');
         _self.callback = callback;
         return this;
-    }
+    };
     // Error callback setter
     this.error = function(callback){
         if(typeof callback !== 'function') return console.warn('ReqX.errors() only accepts functions');
         _self.error_callback = callback;
         return this;
-    }
+    };
     // Ajax handler
     this.ajax = function (url, method, data, callback) {
         // again
@@ -90,7 +92,7 @@ var ReqX = function(config){
                 return
             }
             _self.ajax(url, method, data, callback);
-        }
+        };
         // synchronous mode
         if(config.sync && count > 0){
             // Objectify request
@@ -99,7 +101,7 @@ var ReqX = function(config){
                 method: method,
                 data: data,
                 callback: callback
-            }
+            };
             // Save it for later
             synchronous_queue.push(save);
             return this;
@@ -114,13 +116,13 @@ var ReqX = function(config){
             callback = data;
             data = undefined;
         }
-        if(config.json == true && typeof data === 'object') data = JSON.stringify(data);
+        if(config.json == true && typeof data === 'object' && method !== 'GET') data = JSON.stringify(data);
         start();
         // Make request
         $.ajax({
             url: url,
             cache: config.cache || true,
-            type: method || config.default_method || 'GET',
+            type: method || config.default_method,
             data: data || {},
             dataType: config.dataType,
             contentType: config.contentType,
@@ -135,7 +137,7 @@ var ReqX = function(config){
             done(jqXHR);
         });
         return this;
-    }
+    };
     // GET handler
     this.get = function(url, data, callback){
         if(!data){
