@@ -18,7 +18,7 @@ var ReqX = function(config){
     if(config.json === true){
         config.contentType = 'application/json';
         config.dataType = 'json';
-        config.accepts = 'json';
+        config.accept = 'json';
     }
     // Default to GET
     if(!config.default_method) config.default_method = 'GET';
@@ -126,7 +126,7 @@ var ReqX = function(config){
             data: data || {},
             dataType: config.dataType,
             contentType: config.contentType,
-            accepts: config.accepts
+            accept: config.accept
         }).done(function(result) {
             // Success
             if(callback) callback(null, result, again);
