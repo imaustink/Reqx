@@ -232,7 +232,7 @@ Options | Default | Description | Example
 ------------- | ------------- | ------------- | ------------- 
 Synchronous  | false | Enable synchronous request handler | ReqX({ sync: true })
 Caching  | false | Enable caching on requests | ReqX({ cache: true })
-Accepts  | undefined | Set accepts | ReqX({ accpets: 'json' })
+Accepts  | undefined | Set accepts | ReqX({ accpet: 'json' })
 Data Type  | undefined | Set data type | ReqX({ dataType: 'json' })
 Content Type  | undefined | Set content type | ReqX({ contentType: 'json' })
 JSON mode | undefined | Sends request as JSON | ReqX({ json: true })
