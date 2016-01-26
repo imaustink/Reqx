@@ -54,7 +54,7 @@ Synchronous request
 --------------
 ```javascript
 // Setup synchronous mode
-ReqX().post('/stats', { 'auth': 'authorization-key' }, function(err, result){
+ReqX({ sync: true }).post('/stats', { 'auth': 'authorization-key' }, function(err, result){
     if(err) return;
     drawStats(result);
 // Start a GET request
