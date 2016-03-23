@@ -2,7 +2,8 @@
 var ReqX = function(config){
     // Prevent instance collision
     if(!(this instanceof ReqX)) return new ReqX(config);
-    // LOCALS
+    // Version
+    this.version = '0.3.1 (beta)';
     // Global scope this
     var _self = this;
     // Pending request counter
@@ -13,55 +14,107 @@ var ReqX = function(config){
     var synchronous_queue = [];
     // Config
     if(!config) config = {};
+    // JSON mode
+    if(config.json === true){
+        config.contentType = 'application/json';
+        config.dataType = 'json';
+        config.accept = 'json';
+    }
+    // Default to GET
+    if(!config.default_method) config.default_method = 'GET';
+    var Core = function(){};
+    (function(config){
+        config = config || {};
+        var _self = this;
+        // Get applicable request object
+        function xmlhttp(){
+            // Ancient browser
+            if(window.ActiveXObject) return new ActiveXObject("Microsoft.XMLHTTP");
+            // Moder browser
+            return new XMLHttpRequest();
+        }
+        // XML parser
+        function parseXML(){
+            // Ancient browser
+            if(window.ActiveXObject) return new ActiveXObject("Microsoft.XMLDOM");
+            // Moder browser
+            return new DOMParser();
+        }
+        function parseRawHeaders(headers){
+            headers = headers.split(/\r?\n/);
+            var output = {};
+            headers.forEach(function(header){
+                header = header.toLowerCase().split(':');
+                var key = header[0];
+                var val = header[1];
+                if(key && val) output[key.trim()] = val.trim();
+            });
+            return output;
+        }
+        // Body parser
+        this.parseResponse = function(req){
+            var headers = parseRawHeaders(req.getAllResponseHeaders());
+            // To lower case for dummy proofing
+            var ct = headers['content-type'];
+            // Disable parser, always returns a string
+            if(config.parser == false || !ct) return req.responseText;
+            // Parse based on content type header
 
-    // Request finished
-    function finished(err) {
-        // Decrement pending reqest counter
-        count--;
-        // Had an error
-        if(err){
-            // Reset errors array
-            if(!errors) errors = [];
-            // Save error
-            errors.push(err);
-            // Error callback
-            if(_self.error_callback) _self.error_callback(err);
-        } 
-        // Last request
-        if(count == 0){
-            // Call next synchronous
-            if(synchronous_queue.length > 0) next();
-            // Remove last from the list
-            synchronous_queue.splice(0, 1);
-            // Done callback
-            if(_self.callback && synchronous_queue.length < 1 && count < 1){
-                // No errors, set to null for easy checking
-                if(!errors || errors.length < 1) errors = null;
-                // Callback
-                _self.callback(errors);
-                // Reset callback for next request
-                _self.callback = null;
-            }
-        } 
-    }
-    // Next synchronous request
-    function next(){
-        // No more requests
-        if(synchronous_queue.length < 1) return;
-        // Next request
-        var req = synchronous_queue[0];
-        // Call next request
-        _self.ajax(req.url, req.method, req.data, req.callback);
-    }
-    // Request started
-    function started() {
-        // Incriment pending reqest counter
-        count++;
-    }
+            if(ct.indexOf('json') > -1) return JSON.parse(req.responseText);
+
+            if(ct.indexOf('xml') > -1) return parseXML(req.responseText);
+            // Null response should return here with null string
+            if(!req.responseText) return '';
+            // Return response text
+            return req.responseText;
+        };
+        // Spin up a new ajax request
+        this.request = function(options, callback){
+            var request = xmlhttp();
+            // Done handler
+            request.onreadystatechange = function(){
+                if(this.readyState === 4){
+                    switch(this.status){
+                        // Successful
+                        case 200: case 201: case 202: case 203: case 204: case 205: case 206:
+                        try{
+                            if(callback) callback(null, _self.parseResponse(this), this);
+                        }catch(e){
+                            e.message = 'Failed to parse response!';
+                            if(callback) callback(e, undefined, this);
+                        }
+                        break;
+                        // Fail
+                        case 301: case 302: case 303: case 304: case 305: case 307: case 400: case 401: case 402: case 403: case 404: case 405: case 406: case 407: case 408: case 409: case 410: case 411: case 412: case 413: case 414: case 415: case 416: case 417: case 418: case 500: case 501: case 502: case 503: case 504: case 505: default:
+                        try{
+                            if(callback) callback(_self.parseResponse(this), undefined, this);
+                        }catch(e){
+                            e.message = 'Failed to parse response!';
+                            if(callback) callback(e, undefined, this);
+                        }
+                        break;
+                    }
+                }
+            };
+            // Setup request
+            request.open(options.method, options.url, true);
+            // Set custom headers
+            if(options.headers)
+                for(var header in options.headers)
+                    if(options.headers.hasOwnProperty(header))
+                        request.setRequestHeader(header, options.headers[header]);
+            // Send request
+            request.send(((options.method !== 'GET') && options.data) ? options.data : undefined);
+
+            return request;
+        };
+        // Return constructed Core object
+        return this;
+    }).call(Core, config);
     // Validate URL
     function validateURL(url){
         // Default to current root
-        if(!url || typeof url != 'string') window.location.href;
+        if(!url || typeof url != 'string') url = window.location.href;
         var s = url.indexOf('/');
         var ss = url.indexOf('//');
         var d = url.indexOf('.');
@@ -83,59 +136,84 @@ var ReqX = function(config){
         }
         var qs = '';
         for(var v in vars){
-            if(qs) qs += '&'; 
-            qs += v + '=' + vars[v];
+            if(vars.hasOwnProperty(v)){
+                if(qs) qs += '&';
+                qs += v + '=' + vars[v];
+            }
         }
         return url+qs;
     }
-    // Get applicable reqauet opbject
-    function xmlhttp(){
-        // Ancient  browers
-        if(window.ActiveXObject) return new ActiveXObject("Microsoft.XMLHTTP");
-        // Moder browser
-        return new XMLHttpRequest();
-    }
-    // INSTANCE
-    // Version
-    this.version = 2.0+' (Beta)';
+    // Request started
+    var start = function () {
+        // Incriment pending reqest counter
+        count++;
+    };
+    // Request done
+    var done = function (err) {
+        // Decrement pending reqest counter
+        count--;
+        // Had an error
+        if(err){
+            // Reset errors array
+            if(!errors) errors = [];
+            // Save error
+            errors.push(err);
+            // Error callback
+            if(_self.error_callback) _self.error_callback(err);
+        }
+        // Last request
+        if(count == 0){
+            // Call next synchronous
+            if(synchronous_queue.length > 0) next();
+            // Remove last from the list
+            synchronous_queue.splice(0, 1);
+            // Done callback
+            if(_self.callback && synchronous_queue.length < 1 && count < 1){
+                // No errors, set to null for easy checking
+                if(!errors || errors.length < 1) errors = null;
+                // Callback
+                _self.callback(errors);
+                // Reset callback for next request
+                _self.callback = null;
+            }
+        }
+    };
+    // Next synchronous request
+    var next = function(){
+        // No more requests
+        if(synchronous_queue.length < 1) return;
+        // Next request
+        var req = synchronous_queue[0];
+        // Call next request
+        _self.ajax(req.url, req.method, req.data, req.callback);
+    };
     // Done callback setter
     this.done = function(callback){
         if(typeof callback !== 'function') return console.warn('ReqX.done() only accepts functions');
         _self.callback = callback;
         return this;
-    }
+    };
     // Error callback setter
     this.error = function(callback){
         if(typeof callback !== 'function') return console.warn('ReqX.errors() only accepts functions');
         _self.error_callback = callback;
         return this;
-    }
+    };
     // Ajax handler
-    this.ajax = function (url, method, data, callback) {
+    this.ajax = function (options, callback) {
+        // FIXME
         // again
         var again = function(){
             if(config.sync && count > 0){
-                synchronous_queue.unshift({
-                    url: url,
-                    method: method,
-                    data: data,
-                    callback: callback
-                });
+                synchronous_queue.unshift(options);
                 return
             }
-            _self.ajax(url, method, data, callback);
-        }
+            _self.ajax(options);
+        };
         // synchronous mode
         if(config.sync && count > 0){
-            // Objectify request
-            var save = {
-                url: url,
-                method: method,
-                data: data,
-                callback: callback
-            }
             // Save it for later
-            synchronous_queue.push(save);
+            synchronous_queue.push(options);
             return this;
         }
         //Only URL and callback
@@ -148,113 +226,35 @@ var ReqX = function(config){
             callback = data;
             data = undefined;
         }
-        started();
+        // FIXME this seems heavy handed
+        if(config.json == true && typeof data === 'object' && method !== 'GET') data = JSON.stringify(data);
+        start();
         // Make request
-        this.request({url: url, method: (method || config.default_method || 'GET'), cache: (config.cache || true), data: (data || {}), dataType: config.dataType}, function(err, result, xmlhttp){
+        Core.request(options, function(err, result, xmlhttp){
             if(callback) callback(err, result, xmlhttp, again);
-            finished(err ? err : undefined);
         });
         return this;
-    }
-    // GET handler
-    this.get = function(url, data, callback){
-        if(!data){
-            callback = data;
-            data = undefined;
-        }
-        this.ajax(url, 'GET', data, callback);
-        return this;
     };
-    // Body parser
-    this.parseIncoming = function(req){
-        // To lower case for dummy proofing
-        var ct = req.getResponseHeader('content-type') || req.getResponseHeader('Content-Type');
-        // Disable parser, always returns a string
-        if(config.parser == false || !ct) return req.responseText;
-        // Dummy proof
-        var ct = ct.toLowerCase();
-        // Null response should return here
-        if(!req.responseText) return '';
-        // Parse based on content type header
-        if(ct.indexOf('json') > -1 || ct.indexOf('javascript') > -1){
-            // Try to parse it
-            try{
-                // All good, it's JSON!
-                return JSON.parse(req.responseText);
-            }catch(e){
-                // Bad! It's not JSON
-                var err = new Error('ReqX Error: The request header implied a JSON response. However, the response was not valid JSON.');
-                err.additional = e;
-                // Log a nice warning for devs
-                console.error(err);
-                // Return plain text
-                return req.responseText;
+    // Define request metthod
+    this.defineMethod = function(method){
+        this[method] = function(url, data, callback){
+            if(!data){
+                callback = data;
+                data = undefined;
             }
+            self.ajax(url, 'GET', data, callback);
+            return this;
         }
-        // TODO Parse XML
-        return req.responseText;
-    }
-    // POST handler
-    this.post = function(url, data, callback){
-        if(!data){
-            callback = data;
-            data = undefined;
-        }
-        this.ajax(url, 'POST', data, callback);
-        return this;
     };
-    // Spin a new ajax request
-    this.request = function(options, callback){
-        var request = xmlhttp();
-        // Done handler
-        request.onreadystatechange = function(){
-            switch(request.readyState){
-                    // server connection established
-                case 1:
-                    request.ReqX_status = 'Connected';
-                    break; 
-                    // request received
-                case 2:
-                    request.ReqX_status = 'Received';
-                    break; 
-                    // processing request
-                case 3:
-                    request.ReqX_status = 'Processing';
-                    break;
-                    // request finished and response is ready
-                case 4:
-                    request.ReqX_status = 'Completed';
-                    switch(request.status){
-                        // Successful
-                        case 200: case 201: case 202: case 203: case 204: case 205: case 206:
-                            if(callback) callback(null, _self.parseIncoming(request), request);
-                            break;
-                        // Fail
-                        case 301: case 302: case 303: case 304: case 305: case 307: case 400: case 401: case 402: case 403: case 404: case 405: case 406: case 407: case 408: case 409: case 410: case 411: case 412: case 413: case 414: case 415: case 416: case 417: case 418: case 500: case 501: case 502: case 503: case 504: case 505: default:
-                            if(callback) callback(_self.parseIncoming(request), null, request);
-                    }
-                    break; 
-                default: 
-                    request.ReqX_status = 'Started';
-            }
-        }
-        // Setup request
-        // no cache option
-        if(options.cache === false) url = queryString(url, {t: Date.now()});
-        try{
-            request.open(options.method, queryString(validateURL(options.url), (options.method === 'GET' && typeof options.data === 'object' ? options.data : undefined)), true);
-        }catch(e){
-            var err = new Error('ReqX Error: Failed to open XMLHTTP request');
-            err.additional = e;
-            return console.error(err);
-        }
-        // Set default header
-        if(config.contentType != false) config.contentType ? request.setRequestHeader('Content-Type', config.contentType) : request.setRequestHeader('Content-Type', 'application/json');
-        // Set custom headers
-        if(options.headers) for(var header in headers) request.setRequestHeader(header, headers[header]);
-        // Send request
-        request.send(((options.method === 'POST') && options.data) ? options.data : undefined);
-    }
-    // TODO URL parser
+    // Methods
+    this.defineMethod('GET');
+    this.defineMethod('HEAD');
+    this.defineMethod('POST');
+    this.defineMethod('PUT');
+    this.defineMethod('PATCH');
+    this.defineMethod('DELETE');
+    this.defineMethod('TRACE');
+    this.defineMethod('OPTIONS');
+    
     return this;
 };
