@@ -1,7 +1,7 @@
 ReqX
 ==============
 
-A library for simplifying jQuery AJAX calls while emulating the use of Express module for Node.js with built in synchronous, asynchronous and recursive request handlers.
+A library for simplifying jQuery AJAX calls in a syntax similar to the Express module for Node.js with built in synchronous, asynchronous and recursive request handlers.
 
 Examples
 ==============
