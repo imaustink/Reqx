@@ -3,7 +3,7 @@ ReqX
 
 A library for simplifying jQuery AJAX calls in a syntax similar to the Express module for Node.js with built in synchronous, asynchronous and recursive request handlers.
 
-![Alt text](/reqx-temp-logo.png)
+![Alt text](/reqx-temp-logo-small.png)
 
 Examples
 ==============
