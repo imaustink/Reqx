@@ -36,15 +36,6 @@
                 Accept: 'application/json'
             });
         }
-        // Define methods
-        this.defineMethod('GET');
-        this.defineMethod('HEAD');
-        this.defineMethod('POST');
-        this.defineMethod('PUT');
-        this.defineMethod('PATCH');
-        this.defineMethod('DELETE');
-        this.defineMethod('TRACE');
-        this.defineMethod('OPTIONS');
         return this;
     }
 
@@ -110,22 +101,31 @@
         var length = headers.length;
         for(var i = 0; i < length; i++){
             var header = headers[i].match(HEADER_REGEX);
-            out[header[1].toLowerCase()] = header[2];
+            if(header) out[header[1].toLowerCase()] = header[2];
         }
         return out;
     };
 
+    // Default options
+    Reqx.prototype.defaults = {
+        method: 'GET',
+        json: false,
+        parse: true,
+        redirects: true
+    };
+
     // Define HTTP methods
-    Reqx.prototype.defineMethod = function(method){
-        this[method.toLowerCase()] = function(url, data, callback){
+    Reqx.defineMethod = function(method){
+        this.prototype[method.toLowerCase()] = function(url, data, callback){
+            var _self = this;
             this.request({url: url, data: data, method: method}, function(err, body, req){
                 if(err) return callback(err);
-                var headers = this.parseHeaders(req.getAllResponseHeaders());
+                var headers = _self.parseHeaders(req.getAllResponseHeaders());
                 var content_type = headers['content-type'];
-                if(this.parse && content_type) body = this.parseResponse(body, content_type);
-                if(this.options.redirects && ~[301, 302, 302].indexOf(this.status)){
+                if(_self.options.parse && content_type) body = _self.parseResponse(body, content_type);
+                if(_self.options.redirects && ~[301, 302, 302].indexOf(_self.status)){
                     var location = headers.location;
-                    if(location) return this.request({
+                    if(location) return _self.request({
                         url: location,
                         data: data,
                         method: method
@@ -137,13 +137,15 @@
         };
     };
 
-    // Default options
-    Reqx.prototype.defaults = {
-        method: 'GET',
-        json: false,
-        parse: true,
-        redirects: true
-    };
+    // Define methods
+    Reqx.defineMethod('GET');
+    Reqx.defineMethod('HEAD');
+    Reqx.defineMethod('POST');
+    Reqx.defineMethod('PUT');
+    Reqx.defineMethod('PATCH');
+    Reqx.defineMethod('DELETE');
+    Reqx.defineMethod('TRACE');
+    Reqx.defineMethod('OPTIONS');
 
     // Export to window
     w.Reqx = Reqx;
