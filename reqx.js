@@ -1,6 +1,6 @@
 // Use a closure to get some privacy
 (function(w){
-    // Polly fill Error
+    // Polly fills
     if(!Error){
         var Error = function(message){
             this.message = message;
@@ -41,8 +41,8 @@
 
     // Initate HTTP request
     Reqx.prototype.request = function(options, callback){
+        options = mergeObject(this.options, options);
         var request = Reqx.getXHR();
-        var method = options.method || this.options.method;
         
         request.addEventListener('load', function(){
             callback(null, this.responseText, this);
@@ -52,12 +52,12 @@
             callback(new Error('Request Failed'));
         });
 
-        if(method === 'GET' && options.data){
+        if(options.method === 'GET' && options.data){
             options.url += ('?' + Reqx.toQueryString(options.data));
             delete options.data;
         }
 
-        request.open(method, options.url, true);
+        request.open(options.method, options.url, true);
 
         // Set custom headers
         if(this.options.headers || options.headers){
@@ -70,6 +70,8 @@
         if(this.options.json && typeof options.data === 'object')
             options.data = JSON.stringify(options.data);
 
+        request.withCredentials = options.withCredentials;
+
         request.send(options.data);
 
         return request;
@@ -80,7 +82,8 @@
         method: 'GET',
         json: true,
         parse: true,
-        redirects: true
+        redirects: true,
+        withCredentials: false
     };
 
     // Get applicable request object
@@ -141,29 +144,18 @@
                 var headers = Reqx.parseHeaders(req.getAllResponseHeaders());
                 var content_type = headers['content-type'];
                 if(_self.options.parse && content_type) body = Reqx.parseResponse(body, content_type);
-                if(_self.options.redirects && ~[301, 302, 302].indexOf(_self.status)){
-                    var location = headers.location;
-                    if(location) return _self.request({
-                        url: location,
-                        data: data,
-                        method: method
-                    }, callback);
-                }
                 callback(null, body);
             });
             return this;
         };
     };
 
+    Reqx.default_methods = [
+        'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'TRACE', 'OPTIONS'
+    ];
+
     // Define methods
-    Reqx.defineMethod('GET');
-    Reqx.defineMethod('HEAD');
-    Reqx.defineMethod('POST');
-    Reqx.defineMethod('PUT');
-    Reqx.defineMethod('PATCH');
-    Reqx.defineMethod('DELETE');
-    Reqx.defineMethod('TRACE');
-    Reqx.defineMethod('OPTIONS');
+    for(var i = 0; i < Reqx.default_methods.length; i++) Reqx.defineMethod(Reqx.default_methods[i]);
 
     // Export to window
     w.Reqx = Reqx;
