@@ -2,7 +2,7 @@
 (function(w){
     // Polly fill Error
     if(!Error){
-        var Error = function(message){
+        w.Error = function(message){
             this.message = message;
             this.name = 'Error';
             // Consider generating stack trace
@@ -15,9 +15,9 @@
     function mergeObject(){
         var out = {};
         for(var i = 0; i < arguments.length; i++)
-            for(var f in arguments[i])
-                if(arguments[i].hasOwnProperty(f))
-                    out[f] = arguments[i][f];
+            for(var j in arguments[i])
+                if(arguments[i].hasOwnProperty(j))
+                    out[j] = arguments[i][j];
         return out;
     }
 
@@ -57,6 +57,7 @@
     // Initate HTTP request
     Reqx.prototype.request = function(options, callback){
         var request = this.getXHR();
+        var method = options.method || this.options.method;
         
         request.addEventListener('load', function(){
             callback(null, this.responseText, this);
@@ -66,10 +67,15 @@
             callback(new Error('Request Failed'));
         });
 
-        request.open(options.method || this.options.method, options.url, true);
+        if(method === 'GET' && options.data){
+            options.url += ('?' + this.strigifyVariables(options.data));
+            delete options.data;
+        }
+
+        request.open(method, options.url, true);
 
         // Set custom headers
-        if(options.headers || this.options.headers){
+        if(this.options.headers || options.headers){
             var headers = mergeObject(this.options.headers, options.headers);
             for(var header in headers)
                 if(headers.hasOwnProperty(header))
@@ -106,10 +112,21 @@
         return out;
     };
 
+    Reqx.prototype.strigifyVariables = function(variables){
+        var out = '';
+        for(var i in variables){
+            if(variables.hasOwnProperty(i)){
+                if(out) out += '&';
+                out += (encodeURIComponent(i) + '=' + encodeURIComponent(variables[i]));
+            }
+        }
+        return out;
+    };
+
     // Default options
     Reqx.prototype.defaults = {
         method: 'GET',
-        json: false,
+        json: true,
         parse: true,
         redirects: true
     };
