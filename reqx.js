@@ -1,8 +1,8 @@
-// Closure so we can have private globals
+// Use a closure to get some privacy
 (function(w){
     // Polly fill Error
     if(!Error){
-        w.Error = function(message){
+        var Error = function(message){
             this.message = message;
             this.name = 'Error';
             // Consider generating stack trace
@@ -39,24 +39,9 @@
         return this;
     }
 
-    // Get applicable request object
-    Reqx.prototype.getXHR = function(){
-        // Ancient browser
-        if(window.ActiveXObject) return new ActiveXObject("Microsoft.XMLHTTP");
-        // Moder browser
-        return new XMLHttpRequest();
-    };
-
-    Reqx.prototype.getXMLParser = function(){
-        // Ancient browser
-        if(window.ActiveXObject) return new ActiveXObject("Microsoft.XMLDOM");
-        // Moder browser
-        return new DOMParser();
-    };
-
     // Initate HTTP request
     Reqx.prototype.request = function(options, callback){
-        var request = this.getXHR();
+        var request = Reqx.getXHR();
         var method = options.method || this.options.method;
         
         request.addEventListener('load', function(){
@@ -68,7 +53,7 @@
         });
 
         if(method === 'GET' && options.data){
-            options.url += ('?' + this.strigifyVariables(options.data));
+            options.url += ('?' + Reqx.toQueryString(options.data));
             delete options.data;
         }
 
@@ -90,18 +75,41 @@
         return request;
     };
 
+    // Default options
+    Reqx.prototype.defaults = {
+        method: 'GET',
+        json: true,
+        parse: true,
+        redirects: true
+    };
+
+    // Get applicable request object
+    Reqx.getXHR = function(){
+        // Ancient browser
+        if(window.ActiveXObject) return new ActiveXObject("Microsoft.XMLHTTP");
+        // Moder browser
+        return new XMLHttpRequest();
+    };
+
+    Reqx.getXMLParser = function(){
+        // Ancient browser
+        if(window.ActiveXObject) return new ActiveXObject("Microsoft.XMLDOM");
+        // Moder browser
+        return new DOMParser();
+    };
+
     // Parse HTTP response
-    Reqx.prototype.parseResponse = function(body, format){
+    Reqx.parseResponse = function(body, format){
         if(format.endsWith('json')) return JSON.parse(body);
         if(format.endsWith('xml')){
-            var parser = this.getXMLParser();
+            var parser = Reqx.getXMLParser();
             return parser.parseFromString(body, format);
         }
         return body;
     };
 
     // Parse raw headers
-    Reqx.prototype.parseHeaders = function(raw){
+    Reqx.parseHeaders = function(raw){
         var out = {};
         var headers = raw.split(LINE_RETURN_REGEX);
         var length = headers.length;
@@ -112,7 +120,8 @@
         return out;
     };
 
-    Reqx.prototype.strigifyVariables = function(variables){
+    // Strinify query string variables
+    Reqx.toQueryString = function(variables){
         var out = '';
         for(var i in variables){
             if(variables.hasOwnProperty(i)){
@@ -123,23 +132,15 @@
         return out;
     };
 
-    // Default options
-    Reqx.prototype.defaults = {
-        method: 'GET',
-        json: true,
-        parse: true,
-        redirects: true
-    };
-
     // Define HTTP methods
     Reqx.defineMethod = function(method){
         this.prototype[method.toLowerCase()] = function(url, data, callback){
             var _self = this;
             this.request({url: url, data: data, method: method}, function(err, body, req){
                 if(err) return callback(err);
-                var headers = _self.parseHeaders(req.getAllResponseHeaders());
+                var headers = Reqx.parseHeaders(req.getAllResponseHeaders());
                 var content_type = headers['content-type'];
-                if(_self.options.parse && content_type) body = _self.parseResponse(body, content_type);
+                if(_self.options.parse && content_type) body = Reqx.parseResponse(body, content_type);
                 if(_self.options.redirects && ~[301, 302, 302].indexOf(_self.status)){
                     var location = headers.location;
                     if(location) return _self.request({
