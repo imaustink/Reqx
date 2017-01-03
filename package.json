@@ -4,7 +4,7 @@
   "description": "A simple and lightweight AJAX request handler.",
   "main": "reqx.js",
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start karma.conf.js"
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
   },
   "repository": {
     "type": "git",
