@@ -1,7 +1,7 @@
 // Use a closure to get some privacy
 (function(w){
-
-    // Private helper
+    'use strict';
+    // Private helpers
     function mergeObject(){
         var out = {};
         for(var i = 0; i < arguments.length; i++){
@@ -14,6 +14,10 @@
             }
         }
         return out;
+    }
+
+    function endsWith(str, suffix) {
+        return str.match(suffix+"$")==suffix;
     }
 
     // Reqx constructor
@@ -31,6 +35,10 @@
         var xhr = Reqx.getXHR();
         
         xhr.addEventListener('load', function(){
+            if(this.status >= 400) return callback({
+                message: 'HTTP Error',
+                name: 'Error'
+            });
             callback(null, this.responseText, this);
         });
 
@@ -56,30 +64,21 @@
         return xhr;
     };
 
-    Reqx.preparePayload = function(options){
-        if(options.method === 'GET'){
-            options.url += ('?' + Reqx.toQueryString(data));
-            return;
-        }
-        if(options.form){
-            if(options.data instanceof Element) options.data = new FormData(options.data);
-            else if(typeof options.data === 'object') options.data = Reqx.toFormData(options.data);
-            else if(options.method === 'POST') options.data = Reqx.toQueryString(options.data);
-            return;
-        }
-        if(options.mode === 'json' && typeof options.data === 'object'){
-            options.data = JSON.stringify(options.data);
-            return;
-        }
-    };
-
-    Reqx.setHeaders = function(xhr, headers){
-        // Set custom headers
-        if(headers){
-            for(var header in headers){
-                if(headers.hasOwnProperty(header)) xhr.setRequestHeader(header, headers[header]);   
+    // Define HTTP methods
+    Reqx.defineMethod = function(method){
+        Reqx.prototype[method.toLowerCase()] = function(url, data, callback){
+            if(typeof data === 'function'){
+                callback = data;
+                data = undefined;
             }
-        }
+            var _self = this;
+            this.request({url: url, data: data, method: method}, function(err, body, req){
+                if(err) return callback(Reqx.parseResponse(req));
+                if(_self.options.parse) body = Reqx.parseResponse(req);
+                callback(null, body);
+            });
+            return this;
+        };
     };
 
     // Get applicable request object
@@ -90,12 +89,23 @@
         return new XMLHttpRequest();
     };
 
+    Reqx.preparePayload = function(options){
+        if(options.method === 'GET' && options.data)  options.url += ('?' + Reqx.toQueryString(options.data));
+        if(options.mode === 'form'){
+            if(options.data instanceof Element) options.data = new FormData(options.data);
+            else if(typeof options.data === 'object') options.data = Reqx.toFormData(options.data);
+            else if(options.method === 'POST') options.data = Reqx.toQueryString(options.data);
+        }
+        if(options.mode === 'json' && typeof options.data === 'object') options.data = JSON.stringify(options.data);
+        return options;
+    };
+
     // Parse HTTP response
     Reqx.parseResponse = function(xhr){
         var headers = Reqx.parseHeaders(xhr.getAllResponseHeaders());
         var contentType = headers['content-type'];
         var body = xhr.responseText;
-        if(contentType.endsWith('json')) return JSON.parse(body);
+        if(endsWith(contentType, 'json')) return JSON.parse(body);
         if(xhr.responseXML) return xhr.responseXML;
         return body;
     };
@@ -112,9 +122,18 @@
         return out;
     };
 
-    Reqx.toFormData = function(variables){
+    Reqx.setHeaders = function(xhr, headers){
+        // Set custom headers
+        if(headers){
+            for(var header in headers){
+                if(headers.hasOwnProperty(header)) xhr.setRequestHeader(header, headers[header]);   
+            }
+        }
+    };
+
+    Reqx.toFormData = function(data){
         var form = new FormData();
-        for(var i in variables) if(variables.hasOwnProperty(i)) form.append(i, variables[i]);
+        for(var i in data) if(data.hasOwnProperty(i)) form.append(i, data[i]);
         return form;
     };
 
@@ -128,19 +147,6 @@
             }
         }
         return out;
-    };
-
-    // Define HTTP methods
-    Reqx.defineMethod = function(method){
-        Reqx.prototype[method.toLowerCase()] = function(url, data, callback){
-            var _self = this;
-            this.request({url: url, data: data, method: method}, function(err, body, req){
-                if(err) return callback(err);
-                if(_self.options.parse) body = Reqx.parseResponse(req);
-                callback(null, body);
-            });
-            return this;
-        };
     };
 
     // Default options
@@ -176,6 +182,8 @@
     Reqx.default_methods = [
         'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'TRACE', 'OPTIONS'
     ];
+
+    Reqx.version = '2.0.0';
 
     // Define methods
     for(var i = 0; i < Reqx.default_methods.length; i++) Reqx.defineMethod(Reqx.default_methods[i]);
