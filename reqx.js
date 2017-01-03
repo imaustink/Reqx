@@ -36,16 +36,16 @@
         
         xhr.addEventListener('load', function(){
             if(this.status >= 400) return callback({
-                message: 'HTTP Error',
-                name: 'Error'
+                message: 'The server returned a status code (' + this.status + ') that indicates and error.',
+                name: 'HTTP Error'
             });
             callback(null, this.responseText, this);
         });
 
         xhr.addEventListener('error', function(){
             callback({
-                message: 'Connection Failed',
-                name: 'Error'
+                message: 'Failed to connect to ' + options.url,
+                name: 'Connection Failed'
             });
         });
 
@@ -73,7 +73,10 @@
             }
             var _self = this;
             this.request({url: url, data: data, method: method}, function(err, body, req){
-                if(err) return callback(Reqx.parseResponse(req));
+                if(err){
+                    console.error(err);
+                    return callback(Reqx.parseResponse(req));
+                }
                 if(_self.options.parse) body = Reqx.parseResponse(req);
                 callback(null, body);
             });
@@ -84,19 +87,26 @@
     // Get applicable request object
     Reqx.getXHR = function(){
         // Ancient browser
-        if(window.ActiveXObject) return new ActiveXObject("Microsoft.XMLHTTP");
+        if(w.ActiveXObject) return new ActiveXObject("Microsoft.XMLHTTP");
         // Moder browser
         return new XMLHttpRequest();
     };
 
     Reqx.preparePayload = function(options){
-        if(options.method === 'GET' && options.data)  options.url += ('?' + Reqx.toQueryString(options.data));
+        if(options.method === 'GET' && options.data){
+            options.url += ('?' + Reqx.toQueryString(options.data));
+            return options;
+        }
+        if(options.mode === 'json' && typeof options.data === 'object'){
+            options.data = JSON.stringify(options.data);
+            return options;
+        }
         if(options.mode === 'form'){
             if(options.data instanceof Element) options.data = new FormData(options.data);
             else if(typeof options.data === 'object') options.data = Reqx.toFormData(options.data);
-            else if(options.method === 'POST') options.data = Reqx.toQueryString(options.data);
+            return options;
         }
-        if(options.mode === 'json' && typeof options.data === 'object') options.data = JSON.stringify(options.data);
+        if(options.mode === 'urlencoded' && options.method === 'POST') options.data = Reqx.toQueryString(options.data);
         return options;
     };
 
@@ -105,7 +115,16 @@
         var headers = Reqx.parseHeaders(xhr.getAllResponseHeaders());
         var contentType = headers['content-type'];
         var body = xhr.responseText;
-        if(endsWith(contentType, 'json')) return JSON.parse(body);
+        if(contentType && endsWith(contentType, 'json')){
+            try{
+                return JSON.parse(body);
+            }catch(err){
+                console.error({
+                    message: 'Failed to parse response as JSON',
+                    name: 'Parser Error'
+                });
+            }
+        }
         if(xhr.responseXML) return xhr.responseXML;
         return body;
     };
@@ -118,6 +137,17 @@
         for(var i = 0; i < length; i++){
             var header = headers[i].match(Reqx.regex.header);
             if(header) out[header[1].toLowerCase()] = header[2];
+        }
+        return out;
+    };
+
+    Reqx.parseQueryString = function(queryString){
+        queryString = (queryString || document.location.search).replace(Reqx.regex.query_string, '');
+        var out = {};
+        var parmas = queryString.split('&');
+        for(var i = 0; i < parmas.length; i++){
+            var keyVal = parmas[i].split('=');
+            out[keyVal[0]] = keyVal[1];
         }
         return out;
     };
@@ -161,7 +191,8 @@
     // RegExs
     Reqx.regex = {
         header: /([^:]*):\s?(.+)/,
-        line_return: /\r?\n|\r/gm
+        line_return: /\r?\n|\r/gm,
+        query_string: /^.*?\?/
     };
 
     Reqx.default_headers = {
@@ -175,7 +206,7 @@
         },
         form: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            Accept: 'text/html'
+            Accept: 'application/json, /'
         }
     };
 
