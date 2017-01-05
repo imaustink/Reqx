@@ -21,45 +21,46 @@
     }
 
     // Reqx constructor
-    function Reqx(options){
+    function Reqx(opts){
         // Left merge options and save
-        this.options = mergeObject(Reqx.defaults, options);
+        this.opts = mergeObject(Reqx.defaults, opts);
         // Setup JSON request
-        if(this.options.mode) this.options.headers = mergeObject(this.options.headers, Reqx.default_headers[this.options.mode]);
+        if(this.opts.mode) this.opts.headers = mergeObject(Reqx.default_headers[this.opts.mode], this.opts.headers);
 
         return this;
     }
 
     // Initate HTTP request
-    Reqx.prototype.request = function(options, callback){
+    Reqx.prototype.request = function(opts, callback){
         var xhr = Reqx.getXHR();
         
         xhr.addEventListener('load', function(){
             if(this.status >= 400) return callback({
                 message: 'The server returned a status code (' + this.status + ') that indicates and error.',
-                name: 'HTTP Error'
-            });
+                name: 'HTTP Error',
+                status: this.status
+            }, undefined, this);
             callback(null, this.responseText, this);
         });
 
         xhr.addEventListener('error', function(){
             callback({
-                message: 'Failed to connect to ' + options.url,
+                message: 'Failed to connect to ' + opts.url,
                 name: 'Connection Failed'
             });
         });
 
-        options = mergeObject(this.options, options);
+        opts = mergeObject(this.opts, opts);
 
-        if(options.data) Reqx.preparePayload(options);
+        if(opts.data) Reqx.preparePayload(opts);
 
-        xhr.withCredentials = options.withCredentials;
+        xhr.withCredentials = opts.withCredentials;
 
-        xhr.open(options.method, options.url, true);
+        xhr.open(opts.method, opts.url, true);
 
-        if(options.headers) Reqx.setHeaders(xhr, options.headers);
+        if(opts.headers) Reqx.setHeaders(xhr, opts.headers);
 
-        xhr.send(options.data);
+        xhr.send(opts.data);
 
         return xhr;
     };
@@ -73,11 +74,14 @@
             }
             var _self = this;
             this.request({url: url, data: data, method: method}, function(err, body, req){
+                if(_self.opts.parse && req) body = Reqx.parseResponse(req);
                 if(err){
-                    console.error(err);
-                    return callback(Reqx.parseResponse(req));
+                    if(body){
+                        console.error(err);
+                        return callback(body);
+                    }else callback(err);
                 }
-                if(_self.options.parse) body = Reqx.parseResponse(req);
+                
                 callback(null, body);
             });
             return this;
@@ -87,27 +91,27 @@
     // Get applicable request object
     Reqx.getXHR = function(){
         // Ancient browser
-        if(w.ActiveXObject) return new ActiveXObject("Microsoft.XMLHTTP");
+        if(w.ActiveXObject) return new w.ActiveXObject("Microsoft.XMLHTTP");
         // Moder browser
-        return new XMLHttpRequest();
+        return new w.XMLHttpRequest();
     };
 
-    Reqx.preparePayload = function(options){
-        if(options.method === 'GET' && options.data){
-            options.url += ('?' + Reqx.toQueryString(options.data));
-            return options;
+    Reqx.preparePayload = function(opts){
+        if(opts.method === 'GET' && opts.data){
+            opts.url += ('?' + Reqx.toQueryString(opts.data));
+            return opts;
         }
-        if(options.mode === 'json' && typeof options.data === 'object'){
-            options.data = JSON.stringify(options.data);
-            return options;
+        if(opts.mode === 'json' && typeof opts.data === 'object'){
+            opts.data = JSON.stringify(opts.data);
+            return opts;
         }
-        if(options.mode === 'form'){
-            if(options.data instanceof Element) options.data = new FormData(options.data);
-            else if(typeof options.data === 'object') options.data = Reqx.toFormData(options.data);
-            return options;
+        if(opts.mode === 'form'){
+            if(opts.data instanceof Element) opts.data = new FormData(opts.data);
+            else if(typeof opts.data === 'object') opts.data = Reqx.toFormData(opts.data);
+            return opts;
         }
-        if(options.mode === 'urlencoded' && options.method === 'POST') options.data = Reqx.toQueryString(options.data);
-        return options;
+        if(opts.mode === 'urlencoded' && opts.method === 'POST') opts.data = Reqx.toQueryString(opts.data);
+        return opts;
     };
 
     // Parse HTTP response
@@ -168,12 +172,12 @@
     };
 
     // Strinify query string variables
-    Reqx.toQueryString = function(variables){
+    Reqx.toQueryString = function(params){
         var out = '';
-        for(var i in variables){
-            if(variables.hasOwnProperty(i)){
+        for(var i in params){
+            if(params.hasOwnProperty(i)){
                 if(out) out += '&';
-                out += (encodeURIComponent(i) + '=' + encodeURIComponent(variables[i]));
+                out += (encodeURIComponent(i) + '=' + encodeURIComponent(params[i]));
             }
         }
         return out;
