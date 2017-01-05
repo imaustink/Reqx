@@ -186,7 +186,7 @@ describe('Reqx()', function(){
     });
 });
 describe('Reqx().request()', function(){
-    it('should call callback', function(done){
+    it('should return string', function(done){
         var r = new Reqx();
         r.request({
             method: 'GET',

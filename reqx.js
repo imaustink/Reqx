@@ -99,6 +99,7 @@
     Reqx.preparePayload = function(opts){
         if(opts.method === 'GET' && opts.data){
             opts.url += ('?' + Reqx.toQueryString(opts.data));
+            delete opts.data;
             return opts;
         }
         if(opts.mode === 'json' && typeof opts.data === 'object'){
@@ -110,7 +111,7 @@
             else if(typeof opts.data === 'object') opts.data = Reqx.toFormData(opts.data);
             return opts;
         }
-        if(opts.mode === 'urlencoded' && opts.method === 'POST') opts.data = Reqx.toQueryString(opts.data);
+        if(opts.mode === 'urlencoded') opts.data = Reqx.toQueryString(opts.data);
         return opts;
     };
 
@@ -188,7 +189,6 @@
         method: 'GET',
         mode: 'json',
         parse: true,
-        redirects: true,
         withCredentials: false
     };
 
@@ -209,6 +209,10 @@
             Accept: 'application/xml' 
         },
         form: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'application/json, /'
+        },
+        urlencoded: {
             'Content-Type': 'application/x-www-form-urlencoded',
             Accept: 'application/json, /'
         }
