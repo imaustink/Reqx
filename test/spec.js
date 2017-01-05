@@ -185,6 +185,8 @@ describe('Reqx()', function(){
         for(var i = 0; i < METHODS.length; i++) expect(r[METHODS[i].toLowerCase()]).to.be.a('function');
     });
 });
+/*
+TODO needs mock to test properly
 describe('Reqx().request()', function(){
     it('should return string', function(done){
         var r = new Reqx();
@@ -240,7 +242,7 @@ describe('Reqx().get()', function(){
         });
     });
 });
-
+*/
 function XHRMock(opts){
     opts = opts || {};
     opts.headers = opts.headers || {};
