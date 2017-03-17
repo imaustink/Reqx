@@ -219,10 +219,10 @@ Sets standard url encoded headers and URL encodes data from a provided object.
 
 ## Overwrite Defaults
 
-### Reqx.defaults
+### Reqx.defaults_options
 An object that stores the default options used to construct each instance of Reqx.
 ```javascript
-Reqx.defaults.mode = 'xml';
+Reqx.defaults_options.mode = 'xml';
 ```
 ### Reqx.default_headers
 An object that stores default headers for each mode.
