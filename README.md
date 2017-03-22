@@ -8,6 +8,9 @@ This library is a wrapper for the XHR (XMLHttpRequest) object in browsers to sim
 ## Examples
 ### Simple JSON GET
 Reqx default's to [```mode:'json'```](#options), which will set JSON headers and parse the response accordingly.
+
+[Demo](https://jsfiddle.net/AustinJKurpuis/w2d9sooz/)
+
 ```javascript
 var r = new Reqx();
 r.get('https://httpbin.org/get', function(err, result, xhr){
@@ -18,6 +21,9 @@ r.get('https://httpbin.org/get', function(err, result, xhr){
 
 ### Form POST
 When the [```mode:'form'```](#options) option is set, Reqx will accept a ```<form>``` element as it's second argument and it will set form headers.
+
+[Demo](https://jsfiddle.net/AustinJKurpuis/w2d9sooz/)
+
 ```javascript
 var someForm = document.getElementById('someForm');
 var r = new Reqx({mode: 'form'});
