@@ -8,7 +8,9 @@
             for(var j in arguments[i]){
                 if(arguments[i].hasOwnProperty(j)){
                     var k = arguments[i][j];
-                    if(typeof k === 'object' && !Array.isArray(k)) k = mergeObject(out[j], k);
+                    if(!(k instanceof Element) && (typeof k === 'object' && !Array.isArray(k))){
+                        k = mergeObject(out[j], k);
+                    }
                     out[j] = k;
                 }
             }
