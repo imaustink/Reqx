@@ -22,7 +22,7 @@ r.get('https://httpbin.org/get', function(err, result, xhr){
 ### Form POST
 When the [```mode:'form'```](#options) option is set, Reqx will accept a ```<form>``` element as it's second argument and it will set form headers.
 
-[Demo](https://jsfiddle.net/AustinJKurpuis/w2d9sooz/)
+[Demo](https://jsfiddle.net/AustinJKurpuis/w2d9sooz/1/)
 
 ```javascript
 var someForm = document.getElementById('someForm');
