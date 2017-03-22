@@ -1,7 +1,7 @@
 // Use a closure to get some privacy
 (function(w){
     'use strict';
-    // Private helpers
+    // Private helper
     function mergeObject(){
         var out = {};
         for(var i = 0; i < arguments.length; i++){
@@ -16,30 +16,39 @@
         return out;
     }
 
-    function endsWith(str, suffix) {
-        return str.match(suffix+"$")==suffix;
-    }
-
     // Reqx constructor
     function Reqx(opts){
+        if(!(this instanceof Reqx)){
+            var err = "Class constructor Reqx cannot be invoked without 'new'";
+            if(typeof window.TypeError === 'function'){
+                err = new TypeError(err);
+            }
+            throw err;
+        }
         // Left merge options and save
-        this.opts = mergeObject(Reqx.defaults, opts);
+        this.opts = mergeObject(Reqx.defaults_options, opts);
         // Setup JSON request
-        if(this.opts.mode) this.opts.headers = mergeObject(Reqx.default_headers[this.opts.mode], this.opts.headers);
+        if(this.opts.mode){
+            this.opts.headers = mergeObject(Reqx.default_headers[this.opts.mode], this.opts.headers);
+        }
 
         return this;
     }
 
-    // Initate HTTP request
+
+    // Initiate HTTP request
     Reqx.prototype.request = function(opts, callback){
         var xhr = Reqx.getXHR();
-        
+
         xhr.addEventListener('load', function(){
-            if(this.status >= 400) return callback({
-                message: 'The server returned a status code (' + this.status + ') that indicates and error.',
-                name: 'HTTP Error',
-                status: this.status
-            }, undefined, this);
+            if(this.status >= 400){
+                callback({
+                    message: 'The server returned a status code (' + this.status + ') that indicates and error.',
+                    name: 'HTTP Error',
+                    status: this.status
+                }, undefined, this);
+                return;
+            }
             callback(null, this.responseText, this);
         });
 
@@ -47,18 +56,22 @@
             callback({
                 message: 'Failed to connect to ' + opts.url,
                 name: 'Connection Failed'
-            });
+            }, undefined, this);
         });
 
         opts = mergeObject(this.opts, opts);
 
-        if(opts.data) Reqx.preparePayload(opts);
+        if(opts.data){
+            Reqx.preparePayload(opts);
+        }
 
         xhr.withCredentials = opts.withCredentials;
 
         xhr.open(opts.method, opts.url, true);
 
-        if(opts.headers) Reqx.setHeaders(xhr, opts.headers);
+        if(opts.headers){
+            Reqx.setHeaders(xhr, opts.headers);
+        }
 
         xhr.send(opts.data);
 
@@ -66,22 +79,40 @@
     };
 
     // Define HTTP methods
-    Reqx.defineMethod = function(method){
-        Reqx.prototype[method.toLowerCase()] = function(url, data, callback){
+    Reqx.defineMethod = function(name){
+        var lowerCaseName = name.toLowerCase();
+        Reqx.prototype[lowerCaseName] = function(url, data, callback){
             if(typeof data === 'function'){
                 callback = data;
                 data = undefined;
             }
+            var retries = arguments[3];
             var _self = this;
-            this.request({url: url, data: data, method: method}, function(err, body, req){
-                if(_self.opts.parse && req) body = Reqx.parseResponse(req);
+            var opts = {url: url, data: data, method: name};
+            this.request(opts, function(err, body, req){
+                if(_self.opts.parse && req){
+                    body = Reqx.parseResponse(req);
+                }
                 if(err){
+                    if(_self.opts.retry && !retries){
+                        retries = Reqx.defaults_options.slice();
+                    }
+                    if(retries && retries.length){
+                        console.error(err);
+                        setTimeout(function(){
+                            _self[lowerCaseName](url, data, callback, retries);
+                        }, retries.shift() * 1000);
+                        return;
+                    }
                     if(body){
                         console.error(err);
-                        return callback(body);
-                    }else callback(err);
+                        callback(body);
+                        return;
+                    }else{
+                        callback(err);
+                        return;
+                    }
                 }
-                
                 callback(null, body);
             });
             return this;
@@ -91,7 +122,9 @@
     // Get applicable request object
     Reqx.getXHR = function(){
         // Ancient browser
-        if(w.ActiveXObject) return new w.ActiveXObject("Microsoft.XMLHTTP");
+        if(w.ActiveXObject){
+            return new w.ActiveXObject("Microsoft.XMLHTTP");
+        }
         // Moder browser
         return new w.XMLHttpRequest();
     };
@@ -107,11 +140,16 @@
             return opts;
         }
         if(opts.mode === 'form'){
-            if(opts.data instanceof Element) opts.data = new FormData(opts.data);
-            else if(typeof opts.data === 'object') opts.data = Reqx.toFormData(opts.data);
+            if(opts.data instanceof Element){
+                opts.data = new FormData(opts.data);
+            }else if(typeof opts.data === 'object'){
+                opts.data = Reqx.toFormData(opts.data);
+            }
             return opts;
         }
-        if(opts.mode === 'urlencoded') opts.data = Reqx.toQueryString(opts.data);
+        if(opts.mode === 'urlencoded'){
+            opts.data = Reqx.toQueryString(opts.data);
+        }
         return opts;
     };
 
@@ -120,7 +158,7 @@
         var headers = Reqx.parseHeaders(xhr.getAllResponseHeaders());
         var contentType = headers['content-type'];
         var body = xhr.responseText;
-        if(contentType && endsWith(contentType, 'json')){
+        if(contentType && ~contentType.indexOf('json')){
             try{
                 return JSON.parse(body);
             }catch(err){
@@ -130,7 +168,9 @@
                 });
             }
         }
-        if(xhr.responseXML) return xhr.responseXML;
+        if(xhr.responseXML){
+            return xhr.responseXML;
+        }
         return body;
     };
 
@@ -141,7 +181,9 @@
         var length = headers.length;
         for(var i = 0; i < length; i++){
             var header = headers[i].match(Reqx.regex.header);
-            if(header) out[header[1].toLowerCase()] = header[2];
+            if(header){
+                out[header[1].toLowerCase()] = header[2];
+            }
         }
         return out;
     };
@@ -149,9 +191,9 @@
     Reqx.parseQueryString = function(queryString){
         queryString = (queryString || document.location.search).replace(Reqx.regex.query_string, '');
         var out = {};
-        var parmas = queryString.split('&');
-        for(var i = 0; i < parmas.length; i++){
-            var keyVal = parmas[i].split('=');
+        var params = queryString.split('&');
+        for(var i = 0; i < params.length; i++){
+            var keyVal = params[i].split('=');
             out[keyVal[0]] = keyVal[1];
         }
         return out;
@@ -161,14 +203,20 @@
         // Set custom headers
         if(headers){
             for(var header in headers){
-                if(headers.hasOwnProperty(header)) xhr.setRequestHeader(header, headers[header]);   
+                if(headers.hasOwnProperty(header)){
+                    xhr.setRequestHeader(header, headers[header]);
+                }
             }
         }
     };
 
     Reqx.toFormData = function(data){
         var form = new FormData();
-        for(var i in data) if(data.hasOwnProperty(i)) form.append(i, data[i]);
+        for(var i in data){
+            if(data.hasOwnProperty(i)){
+                form.append(i, data[i]);
+            }
+        }
         return form;
     };
 
@@ -177,7 +225,9 @@
         var out = '';
         for(var i in params){
             if(params.hasOwnProperty(i)){
-                if(out) out += '&';
+                if(out){
+                    out += '&';
+                }
                 out += (encodeURIComponent(i) + '=' + encodeURIComponent(params[i]));
             }
         }
@@ -185,18 +235,13 @@
     };
 
     // Default options
-    Reqx.defaults = {
+    Reqx.defaults_options = {
         method: 'GET',
         mode: 'json',
         parse: true,
+        retry: false,
+        retryStrategy: [0.2, 2, 8],
         withCredentials: false
-    };
-
-    // RegExs
-    Reqx.regex = {
-        header: /([^:]*):\s?(.+)/,
-        line_return: /\r?\n|\r/gm,
-        query_string: /^.*?\?/
     };
 
     Reqx.default_headers = {
@@ -224,8 +269,17 @@
 
     Reqx.version = '2.0.0';
 
+    // RegExs
+    Reqx.regex = {
+        header: /([^:]*):\s?(.+)/,
+        line_return: /\r?\n|\r/gm,
+        query_string: /^.*?\?/
+    };
+
     // Define methods
-    for(var i = 0; i < Reqx.default_methods.length; i++) Reqx.defineMethod(Reqx.default_methods[i]);
+    for(var i = 0; i < Reqx.default_methods.length; i++){
+        Reqx.defineMethod(Reqx.default_methods[i]);
+    }
 
     // Export to window
     w.Reqx = Reqx;
