@@ -1,6 +1,14 @@
 // Use a closure to get some privacy
 (function(w){
     'use strict';
+
+    // Polly fill console
+    if(!console){
+        console = {
+            error: function error(){}
+        };
+    }
+    
     // Private helper
     function mergeObject(){
         var out = {};
