@@ -35,5 +35,8 @@
     "mocha": "^3.2.0",
     "requirejs": "^2.3.2",
     "sinon": "^1.17.7"
+  },
+  "dependencies": {
+    "can-fixture": "^1.0.13"
   }
 }

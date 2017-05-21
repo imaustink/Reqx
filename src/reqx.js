@@ -8,7 +8,7 @@
             error: function error(){}
         };
     }
-    
+
     // Private helper
     function mergeObject(){
         var out = {};
@@ -53,20 +53,20 @@
         xhr.addEventListener('load', function(){
             if(this.status >= 400){
                 callback({
-                    message: 'The server returned a status code (' + this.status + ') that indicates and error.',
+                    message: 'The server returned a status code of ' + this.status + '.',
                     name: 'HTTP Error',
                     status: this.status
-                }, undefined, this);
+                });
                 return;
             }
-            callback(null, this.responseText, this);
+            callback(null, this.responseText);
         });
 
         xhr.addEventListener('error', function(){
             callback({
                 message: 'Failed to connect to ' + opts.url,
                 name: 'Connection Failed'
-            }, undefined, this);
+            });
         });
 
         opts = mergeObject(this.opts, opts);
@@ -98,10 +98,13 @@
             }
             var retries = arguments[3];
             var _self = this;
-            var opts = {url: url, data: data, method: name};
-            this.request(opts, function(err, body, req){
-                if(_self.opts.parse && req){
-                    body = Reqx.parseResponse(req);
+            var xhr = this.request({
+                url: url,
+                data: data,
+                method: name
+            }, function(err, body){
+                if(_self.opts.parse){
+                    body = Reqx.parseResponse(xhr);
                 }
                 if(err){
                     if(_self.opts.retry && !retries){
@@ -114,18 +117,13 @@
                         }, retries.shift() * 1000);
                         return;
                     }
-                    if(body){
-                        console.error(err);
-                        callback(body);
-                        return;
-                    }else{
-                        callback(err);
-                        return;
-                    }
+                    err.body = body;
+                    callback(err, null);
+                    return;
                 }
                 callback(null, body);
             });
-            return this;
+            return xhr;
         };
     };
 

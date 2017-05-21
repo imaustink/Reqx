@@ -9,6 +9,8 @@ const NOT_JSON = 'this is not JSON';
 
 const XHR = (window.ActiveXObject ? window.ActiveXObject : window.XMLHttpRequest);
 
+//const fixture = require('can-fixture');
+
 describe('Reqx.defineMethod()', function(){
     it('should attach method to prototype', function(){
         Reqx.defineMethod('TEST');
@@ -185,17 +187,24 @@ describe('Reqx()', function(){
         for(var i = 0; i < METHODS.length; i++) expect(r[METHODS[i].toLowerCase()]).to.be.a('function');
     });
 });
-/*
-TODO needs mock to test properly
-describe('Reqx().request()', function(){
-    it('should return string', function(done){
+
+/*describe('Reqx().request()', function(){
+    it('should return "Hello World"', function(done){
+
+        var payload = 'Hello World';
+
+        fixture('GET /string/get', function(){
+            return payload;
+        });
+
         var r = new Reqx();
         r.request({
             method: 'GET',
-            url: 'https://httpbin.org/get'
+            url: '/string/get'
         }, function(err, result){
             if(err) return done(err);
             expect(result).to.be.a('string');
+            expect(result).to.equal(payload);
             done();
         });
     });
@@ -241,8 +250,8 @@ describe('Reqx().get()', function(){
             done();
         });
     });
-});
-*/
+});*/
+
 function XHRMock(opts){
     opts = opts || {};
     opts.headers = opts.headers || {};
