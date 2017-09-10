@@ -1,4 +1,6 @@
 # Reqx
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/imaustink/Reqx.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/imaustink/Reqx.svg?branch=master)](https://travis-ci.org/imaustink/Reqx)
 
 A simple and lightweight AJAX request handler with no dependencies.
